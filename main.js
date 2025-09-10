@@ -87,7 +87,7 @@ const kanaGroups = [
 // 展示一览表
 function renderKanaTable() {
   const tablePage = document.getElementById('table-page');
-  tablePage.innerHTML = '<h2>五十音图一览表</h2>';
+  tablePage.innerHTML = '';
   const kanaTableDiv = document.createElement('div');
   kanaTableDiv.className = 'kana-table';
   kanaGroups.forEach(group => {
@@ -355,7 +355,6 @@ function resetPractice() {
 
 // 页面切换
 function showPage(page) {
-  document.getElementById('intro-page').style.display = (page === 'intro') ? '' : 'none';
   document.getElementById('table-page').style.display = (page === 'table') ? '' : 'none';
   document.getElementById('practice-page').style.display = (page === 'practice') ? '' : 'none';
 }
@@ -363,6 +362,6 @@ function showPage(page) {
 // 初始化
 window.onload = function() {
   renderKanaTable();
-  showPage('intro');
+  showPage('table');
   setPracticeType('hira');
 };
