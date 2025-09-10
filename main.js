@@ -1,0 +1,308 @@
+// 假名数据分组
+const kanaGroups = [
+  {
+    name: '清音',
+    list: [
+      { roma: 'a', hira: 'あ', kata: 'ア', origin: '安' },
+      { roma: 'i', hira: 'い', kata: 'イ', origin: '以' },
+      { roma: 'u', hira: 'う', kata: 'ウ', origin: '宇' },
+      { roma: 'e', hira: 'え', kata: 'エ', origin: '衣' },
+      { roma: 'o', hira: 'お', kata: 'オ', origin: '於' },
+      { roma: 'ka', hira: 'か', kata: 'カ', origin: '加' },
+      { roma: 'ki', hira: 'き', kata: 'キ', origin: '幾' },
+      { roma: 'ku', hira: 'く', kata: 'ク', origin: '久' },
+      { roma: 'ke', hira: 'け', kata: 'ケ', origin: '计' },
+      { roma: 'ko', hira: 'こ', kata: 'コ', origin: '己' },
+      { roma: 'sa', hira: 'さ', kata: 'サ', origin: '左' },
+      { roma: 'shi', hira: 'し', kata: 'シ', origin: '之' },
+      { roma: 'su', hira: 'す', kata: 'ス', origin: '寸' },
+      { roma: 'se', hira: 'せ', kata: 'セ', origin: '世' },
+      { roma: 'so', hira: 'そ', kata: 'ソ', origin: '曽' },
+      { roma: 'ta', hira: 'た', kata: 'タ', origin: '太' },
+      { roma: 'chi', hira: 'ち', kata: 'チ', origin: '知' },
+      { roma: 'tsu', hira: 'つ', kata: 'ツ', origin: '川' },
+      { roma: 'te', hira: 'て', kata: 'テ', origin: '天' },
+      { roma: 'to', hira: 'と', kata: 'ト', origin: '止' },
+      { roma: 'na', hira: 'な', kata: 'ナ', origin: '奈' },
+      { roma: 'ni', hira: 'に', kata: 'ニ', origin: '仁' },
+      { roma: 'nu', hira: 'ぬ', kata: 'ヌ', origin: '奴' },
+      { roma: 'ne', hira: 'ね', kata: 'ネ', origin: '祢' },
+      { roma: 'no', hira: 'の', kata: 'ノ', origin: '乃' },
+      { roma: 'ha', hira: 'は', kata: 'ハ', origin: '波' },
+      { roma: 'hi', hira: 'ひ', kata: 'ヒ', origin: '比' },
+      { roma: 'fu', hira: 'ふ', kata: 'フ', origin: '不' },
+      { roma: 'he', hira: 'へ', kata: 'ヘ', origin: '部' },
+      { roma: 'ho', hira: 'ほ', kata: 'ホ', origin: '保' },
+      { roma: 'ma', hira: 'ま', kata: 'マ', origin: '末' },
+      { roma: 'mi', hira: 'み', kata: 'ミ', origin: '美' },
+      { roma: 'mu', hira: 'む', kata: 'ム', origin: '武' },
+      { roma: 'me', hira: 'め', kata: 'メ', origin: '女' },
+      { roma: 'mo', hira: 'も', kata: 'モ', origin: '毛' },
+      { roma: 'ya', hira: 'や', kata: 'ヤ', origin: '也' },
+      { roma: 'yu', hira: 'ゆ', kata: 'ユ', origin: '由' },
+      { roma: 'yo', hira: 'よ', kata: 'ヨ', origin: '与' },
+      { roma: 'ra', hira: 'ら', kata: 'ラ', origin: '良' },
+      { roma: 'ri', hira: 'り', kata: 'リ', origin: '利' },
+      { roma: 'ru', hira: 'る', kata: 'ル', origin: '留' },
+      { roma: 're', hira: 'れ', kata: 'レ', origin: '礼' },
+      { roma: 'ro', hira: 'ろ', kata: 'ロ', origin: '吕' },
+      { roma: 'wa', hira: 'わ', kata: 'ワ', origin: '和' },
+      { roma: 'wo', hira: 'を', kata: 'ヲ', origin: '远' },
+      { roma: 'n', hira: 'ん', kata: 'ン', origin: '' }
+    ]
+  },
+  {
+    name: '浊音',
+    list: [
+      { roma: 'ga', hira: 'が', kata: 'ガ' }, { roma: 'gi', hira: 'ぎ', kata: 'ギ' }, { roma: 'gu', hira: 'ぐ', kata: 'グ' }, { roma: 'ge', hira: 'げ', kata: 'ゲ' }, { roma: 'go', hira: 'ご', kata: 'ゴ' },
+      { roma: 'za', hira: 'ざ', kata: 'ザ' }, { roma: 'ji', hira: 'じ', kata: 'ジ' }, { roma: 'zu', hira: 'ず', kata: 'ズ' }, { roma: 'ze', hira: 'ぜ', kata: 'ゼ' }, { roma: 'zo', hira: 'ぞ', kata: 'ゾ' },
+      { roma: 'da', hira: 'だ', kata: 'ダ' }, { roma: 'ji', hira: 'ぢ', kata: 'ヂ' }, { roma: 'zu', hira: 'づ', kata: 'ヅ' }, { roma: 'de', hira: 'で', kata: 'デ' }, { roma: 'do', hira: 'ど', kata: 'ド' },
+      { roma: 'ba', hira: 'ば', kata: 'バ' }, { roma: 'bi', hira: 'び', kata: 'ビ' }, { roma: 'bu', hira: 'ぶ', kata: 'ブ' }, { roma: 'be', hira: 'べ', kata: 'ベ' }, { roma: 'bo', hira: 'ぼ', kata: 'ボ' }
+    ]
+  },
+  {
+    name: '半浊音',
+    list: [
+      { roma: 'pa', hira: 'ぱ', kata: 'パ' }, { roma: 'pi', hira: 'ぴ', kata: 'ピ' }, { roma: 'pu', hira: 'ぷ', kata: 'プ' }, { roma: 'pe', hira: 'ぺ', kata: 'ペ' }, { roma: 'po', hira: 'ぽ', kata: 'ポ' }
+    ]
+  },
+  {
+    name: '拗音',
+    list: [
+      { roma: 'kya', hira: 'きゃ', kata: 'キャ' }, { roma: 'kyu', hira: 'きゅ', kata: 'キュ' }, { roma: 'kyo', hira: 'きょ', kata: 'キョ' },
+      { roma: 'sha', hira: 'しゃ', kata: 'シャ' }, { roma: 'shu', hira: 'しゅ', kata: 'シュ' }, { roma: 'sho', hira: 'しょ', kata: 'ショ' },
+      { roma: 'cha', hira: 'ちゃ', kata: 'チャ' }, { roma: 'chu', hira: 'ちゅ', kata: 'チュ' }, { roma: 'cho', hira: 'ちょ', kata: 'チョ' },
+      { roma: 'nya', hira: 'にゃ', kata: 'ニャ' }, { roma: 'nyu', hira: 'にゅ', kata: 'ニュ' }, { roma: 'nyo', hira: 'にょ', kata: 'ニョ' },
+      { roma: 'hya', hira: 'ひゃ', kata: 'ヒャ' }, { roma: 'hyu', hira: 'ひゅ', kata: 'ヒュ' }, { roma: 'hyo', hira: 'ひょ', kata: 'ヒョ' },
+      { roma: 'mya', hira: 'みゃ', kata: 'ミャ' }, { roma: 'myu', hira: 'みゅ', kata: 'ミュ' }, { roma: 'myo', hira: 'みょ', kata: 'ミョ' },
+      { roma: 'rya', hira: 'りゃ', kata: 'リャ' }, { roma: 'ryu', hira: 'りゅ', kata: 'リュ' }, { roma: 'ryo', hira: 'りょ', kata: 'リョ' },
+      { roma: 'gya', hira: 'ぎゃ', kata: 'ギャ' }, { roma: 'gyu', hira: 'ぎゅ', kata: 'ギュ' }, { roma: 'gyo', hira: 'ぎょ', kata: 'ギョ' },
+      { roma: 'ja', hira: 'じゃ', kata: 'ジャ' }, { roma: 'ju', hira: 'じゅ', kata: 'ジュ' }, { roma: 'jo', hira: 'じょ', kata: 'ジョ' },
+      { roma: 'bya', hira: 'びゃ', kata: 'ビャ' }, { roma: 'byu', hira: 'びゅ', kata: 'ビュ' }, { roma: 'byo', hira: 'びょ', kata: 'ビョ' },
+      { roma: 'pya', hira: 'ぴゃ', kata: 'ピャ' }, { roma: 'pyu', hira: 'ぴゅ', kata: 'ピュ' }, { roma: 'pyo', hira: 'ぴょ', kata: 'ピョ' }
+    ]
+  }
+];
+
+// 展示一览表
+function renderKanaTable() {
+  const tablePage = document.getElementById('table-page');
+  tablePage.innerHTML = '<h2>五十音图一览表</h2>';
+  const kanaTableDiv = document.createElement('div');
+  kanaTableDiv.className = 'kana-table';
+  kanaGroups.forEach(group => {
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'kana-group';
+    groupDiv.innerHTML = `<h3>${group.name}</h3>`;
+    const listDiv = document.createElement('div');
+    listDiv.className = 'kana-list';
+    // 每行5个
+    // 清音特殊处理，补齐ya行、wa行、n行空白
+    if (group.name === '清音') {
+      const cleanRows = [
+        group.list.slice(0, 5),   // a i u e o
+        group.list.slice(5, 10),  // ka ki ku ke ko
+        group.list.slice(10, 15), // sa shi su se so
+        group.list.slice(15, 20), // ta chi tsu te to
+        group.list.slice(20, 25), // na ni nu ne no
+        group.list.slice(25, 30), // ha hi fu he ho
+        group.list.slice(30, 35), // ma mi mu me mo
+        // ya行，补空白
+        [
+          group.list[35], // ya
+          {roma:'',hira:'',kata:''}, // (i)
+          group.list[36], // yu
+          {roma:'',hira:'',kata:''}, // (e)
+          group.list[37]  // yo
+        ],
+        group.list.slice(38, 43), // ra ri ru re ro
+        // wa行，补空白
+        [
+          group.list[43], // wa
+          {roma:'',hira:'',kata:''},
+          {roma:'',hira:'',kata:''},
+          {roma:'',hira:'',kata:''},
+          group.list[44] // wo
+        ],
+        // n行，补空白
+        [
+          group.list[45], // n
+          {roma:'',hira:'',kata:''},
+          {roma:'',hira:'',kata:''},
+          {roma:'',hira:'',kata:''},
+          {roma:'',hira:'',kata:''}
+        ]
+      ];
+      cleanRows.forEach(row => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'kana-row';
+        row.forEach(item => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'kana-item';
+          itemDiv.innerHTML = `<span class="kana-roma">${item.roma}</span><span class="kana-hira">${item.hira}</span><span class="kana-kata">${item.kata}</span>`;
+          itemDiv.addEventListener('click', function(e) {
+            if (!item.roma && !item.hira && !item.kata) return;
+            showKanaDetail(item);
+            e.stopPropagation();
+          });
+          rowDiv.appendChild(itemDiv);
+        });
+        listDiv.appendChild(rowDiv);
+      });
+    } else if (group.name === '拗音') {
+      for (let i = 0; i < group.list.length; i += 3) {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'kana-row';
+        for (let j = i; j < i + 3; j++) {
+          let item = group.list[j];
+          if (!item) item = {roma:'',hira:'',kata:''};
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'kana-item';
+          itemDiv.innerHTML = `<span class="kana-roma">${item.roma}</span><span class="kana-hira">${item.hira}</span><span class="kana-kata">${item.kata}</span>`;
+          itemDiv.addEventListener('click', function(e) {
+            if (!item.roma && !item.hira && !item.kata) return;
+            showKanaDetail(item);
+            e.stopPropagation();
+          });
+          rowDiv.appendChild(itemDiv);
+// 假名详情弹窗
+function showKanaDetail(item) {
+  // 遮罩
+  let mask = document.createElement('div');
+  mask.className = 'kana-detail-mask';
+  mask.onclick = function() {
+    document.body.removeChild(mask);
+    document.body.removeChild(detailDiv);
+  };
+  document.body.appendChild(mask);
+  // 弹窗
+  let detailDiv = document.createElement('div');
+  detailDiv.className = 'kana-detail-popup';
+  detailDiv.innerHTML = `
+    <div class="kana-detail-close" onclick="this.parentNode.remove();document.querySelector('.kana-detail-mask').remove();">×</div>
+    <div class="kana-detail-main">
+      <div class="kana-detail-big">
+        <span class="kana-detail-hira">${item.hira || ''}</span>
+        <span class="kana-detail-kata">${item.kata || ''}</span>
+      </div>
+      <div class="kana-detail-roma">罗马音：${item.roma || ''}</div>
+      <div class="kana-detail-origin">汉字来源：${item.origin ? item.origin : '无'}</div>
+      <div class="kana-detail-stroke">笔画：<span class="kana-detail-stroke-img">（占位）</span></div>
+    </div>
+  `;
+  document.body.appendChild(detailDiv);
+}
+        }
+        listDiv.appendChild(rowDiv);
+      }
+    } else {
+      for (let i = 0; i < group.list.length; i += 5) {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'kana-row';
+        for (let j = i; j < i + 5; j++) {
+          let item = group.list[j];
+          if (!item) item = {roma:'',hira:'',kata:''};
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'kana-item';
+          itemDiv.innerHTML = `<span class="kana-roma">${item.roma}</span><span class="kana-hira">${item.hira}</span><span class="kana-kata">${item.kata}</span>`;
+          rowDiv.appendChild(itemDiv);
+        }
+        listDiv.appendChild(rowDiv);
+      }
+    }
+    groupDiv.appendChild(listDiv);
+    kanaTableDiv.appendChild(groupDiv);
+  });
+  tablePage.appendChild(kanaTableDiv);
+}
+
+// 练习数据
+let practiceType = 'hira';
+let score = 0;
+let total = 0;
+let currentIndex = 0;
+let currentList = [];
+
+function setPracticeType(type) {
+  practiceType = type;
+  score = 0;
+  total = 0;
+  updateScore();
+  currentList = kanaGroups[0].list; // 只用清音练习，可扩展
+  nextKana();
+  document.querySelectorAll('.practice-mode button').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(type + '-btn').classList.add('active');
+}
+
+function nextKana() {
+  currentIndex = Math.floor(Math.random() * currentList.length);
+  document.getElementById('random-kana').textContent = currentList[currentIndex][practiceType];
+  document.getElementById('result').textContent = '';
+  generateOptions();
+}
+
+function generateOptions() {
+  const correct = currentList[currentIndex].roma;
+  let options = [correct];
+  while (options.length < 4) {
+    let idx = Math.floor(Math.random() * currentList.length);
+    let roma = currentList[idx].roma;
+    if (!options.includes(roma)) options.push(roma);
+  }
+  options = options.sort(() => Math.random() - 0.5);
+  const optionsDiv = document.getElementById('options');
+  optionsDiv.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.textContent = opt;
+    btn.className = 'option-btn';
+    btn.onclick = () => checkAnswer(btn, opt);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(btn, selected) {
+  const correct = currentList[currentIndex].roma;
+  total++;
+  document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+  btn.classList.add('selected');
+  if (selected === correct) {
+    score++;
+    document.getElementById('result').textContent = '正确！';
+    document.getElementById('result').style.color = 'green';
+    updateScore();
+    setTimeout(() => {
+      document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      document.querySelectorAll('.option-btn').forEach(b => b.disabled = false);
+      nextKana();
+    }, 600);
+  } else {
+    document.getElementById('result').textContent = `错误，正确答案是：${correct}`;
+    document.getElementById('result').style.color = 'red';
+    updateScore();
+    setTimeout(() => {
+      document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      document.querySelectorAll('.option-btn').forEach(b => b.disabled = false);
+      nextKana();
+    }, 1200);
+  }
+}
+
+function updateScore() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('total').textContent = total;
+}
+
+// 页面切换
+function showPage(page) {
+  document.getElementById('intro-page').style.display = (page === 'intro') ? '' : 'none';
+  document.getElementById('table-page').style.display = (page === 'table') ? '' : 'none';
+  document.getElementById('practice-page').style.display = (page === 'practice') ? '' : 'none';
+}
+
+// 初始化
+window.onload = function() {
+  renderKanaTable();
+  showPage('intro');
+  setPracticeType('hira');
+};
