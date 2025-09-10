@@ -47,7 +47,8 @@ main { max-width: 900px; margin: 2rem auto; background: #fff; border-radius: 12p
 .kana-group h3 { color: #357abd; margin-bottom: 1rem; text-align: center; }
 .kana-list { display: block; }
 .kana-row { display: flex; flex-direction: row; gap: 0.7rem; margin-bottom: 0.7rem; justify-content: center; }
-.kana-item { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px #0001; padding: 0.7rem 1.2rem; display: flex; flex-direction: column; align-items: center; min-width: 80px; }
+.kana-item { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px #0001; padding: 0.7rem 1.2rem; display: flex; flex-direction: column; align-items: center; min-width: 80px; cursor: pointer; transition: transform 0.08s ease, box-shadow 0.12s ease; }
+.kana-item:hover { transform: translateY(-1px); box-shadow: 0 2px 8px #0002; }
 .kana-roma { color: #4a90e2; font-size: 1.1rem; font-weight: bold; }
 .kana-hira { font-size: 1.5rem; color: #222; }
 .kana-kata { font-size: 1.3rem; color: #888; }
@@ -68,6 +69,10 @@ main { max-width: 900px; margin: 2rem auto; background: #fff; border-radius: 12p
 @media (max-width: 600px) {
   main { padding: 1rem; }
   .kana-group { padding: 0.5rem; }
-  .kana-item { min-width: 60px; padding: 0.5rem 0.7rem; }
+  .kana-row { gap: 0.4rem; }
+  .kana-item { min-width: 50px; padding: 0.35rem 0.5rem; }
+  .kana-roma { font-size: 0.95rem; }
+  .kana-hira { font-size: 1.25rem; }
+  .kana-kata { font-size: 1.05rem; }
   #options { flex-direction: column; gap: 0.5rem; }
 }

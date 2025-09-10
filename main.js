@@ -96,10 +96,12 @@ function renderKanaTable() {
     groupDiv.innerHTML = `<h3>${group.name}</h3>`;
     const listDiv = document.createElement('div');
     listDiv.className = 'kana-list';
-    // 每行5个
-    // 清音特殊处理，补齐ya行、wa行、n行空白
+    // 统一处理每行假名渲染和点击事件绑定
+    let rowSize;
+    let rows = [];
     if (group.name === '清音') {
-      const cleanRows = [
+      rowSize = 5;
+      rows = [
         group.list.slice(0, 5),   // a i u e o
         group.list.slice(5, 10),  // ka ki ku ke ko
         group.list.slice(10, 15), // sa shi su se so
@@ -133,83 +135,45 @@ function renderKanaTable() {
           {roma:'',hira:'',kata:''}
         ]
       ];
-      cleanRows.forEach(row => {
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'kana-row';
-        row.forEach(item => {
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'kana-item';
-          itemDiv.innerHTML = `<span class="kana-roma">${item.roma}</span><span class="kana-hira">${item.hira}</span><span class="kana-kata">${item.kata}</span>`;
-          itemDiv.addEventListener('click', function(e) {
-            if (!item.roma && !item.hira && !item.kata) return;
-            showKanaDetail(item);
-            e.stopPropagation();
-          });
-          rowDiv.appendChild(itemDiv);
-        });
-        listDiv.appendChild(rowDiv);
-      });
     } else if (group.name === '拗音') {
-      for (let i = 0; i < group.list.length; i += 3) {
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'kana-row';
-        for (let j = i; j < i + 3; j++) {
+      rowSize = 3;
+      for (let i = 0; i < group.list.length; i += rowSize) {
+        let row = [];
+        for (let j = i; j < i + rowSize; j++) {
           let item = group.list[j];
           if (!item) item = {roma:'',hira:'',kata:''};
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'kana-item';
-          itemDiv.innerHTML = `<span class="kana-roma">${item.roma}</span><span class="kana-hira">${item.hira}</span><span class="kana-kata">${item.kata}</span>`;
-          itemDiv.addEventListener('click', function(e) {
-            if (!item.roma && !item.hira && !item.kata) return;
-            showKanaDetail(item);
-            e.stopPropagation();
-          });
-          rowDiv.appendChild(itemDiv);
-// 假名详情弹窗
-function showKanaDetail(item) {
-  // 遮罩
-  let mask = document.createElement('div');
-  mask.className = 'kana-detail-mask';
-  mask.onclick = function() {
-    document.body.removeChild(mask);
-    document.body.removeChild(detailDiv);
-  };
-  document.body.appendChild(mask);
-  // 弹窗
-  let detailDiv = document.createElement('div');
-  detailDiv.className = 'kana-detail-popup';
-  detailDiv.innerHTML = `
-    <div class="kana-detail-close" onclick="this.parentNode.remove();document.querySelector('.kana-detail-mask').remove();">×</div>
-    <div class="kana-detail-main">
-      <div class="kana-detail-big">
-        <span class="kana-detail-hira">${item.hira || ''}</span>
-        <span class="kana-detail-kata">${item.kata || ''}</span>
-      </div>
-      <div class="kana-detail-roma">罗马音：${item.roma || ''}</div>
-      <div class="kana-detail-origin">汉字来源：${item.origin ? item.origin : '无'}</div>
-      <div class="kana-detail-stroke">笔画：<span class="kana-detail-stroke-img">（占位）</span></div>
-    </div>
-  `;
-  document.body.appendChild(detailDiv);
-}
+          row.push(item);
         }
-        listDiv.appendChild(rowDiv);
+        rows.push(row);
       }
     } else {
-      for (let i = 0; i < group.list.length; i += 5) {
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'kana-row';
-        for (let j = i; j < i + 5; j++) {
+      rowSize = 5;
+      for (let i = 0; i < group.list.length; i += rowSize) {
+        let row = [];
+        for (let j = i; j < i + rowSize; j++) {
           let item = group.list[j];
           if (!item) item = {roma:'',hira:'',kata:''};
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'kana-item';
-          itemDiv.innerHTML = `<span class="kana-roma">${item.roma}</span><span class="kana-hira">${item.hira}</span><span class="kana-kata">${item.kata}</span>`;
-          rowDiv.appendChild(itemDiv);
+          row.push(item);
         }
-        listDiv.appendChild(rowDiv);
+        rows.push(row);
       }
     }
+    rows.forEach(row => {
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'kana-row';
+      row.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'kana-item';
+        itemDiv.innerHTML = `<span class="kana-roma">${item.roma}</span><span class="kana-hira">${item.hira}</span><span class="kana-kata">${item.kata}</span>`;
+        itemDiv.addEventListener('click', function(e) {
+          if (!item.roma && !item.hira && !item.kata) return;
+          showKanaDetail(item);
+          e.stopPropagation();
+        });
+        rowDiv.appendChild(itemDiv);
+      });
+      listDiv.appendChild(rowDiv);
+    });
     groupDiv.appendChild(listDiv);
     kanaTableDiv.appendChild(groupDiv);
   });
@@ -222,6 +186,86 @@ let score = 0;
 let total = 0;
 let currentIndex = 0;
 let currentList = [];
+
+// 弹窗：显示假名详情
+let __kanaDetailEscHandler = null;
+function showKanaDetail(item) {
+  // 移除已有弹窗
+  closeKanaDetail();
+
+  const mask = document.createElement('div');
+  mask.className = 'kana-detail-mask';
+  const popup = document.createElement('div');
+  popup.className = 'kana-detail-popup';
+
+  // 关闭按钮
+  const closeBtn = document.createElement('div');
+  closeBtn.className = 'kana-detail-close';
+  closeBtn.textContent = '×';
+  closeBtn.addEventListener('click', closeKanaDetail);
+
+  // 内容
+  const title = document.createElement('h3');
+  title.textContent = '假名详情';
+
+  const mainWrap = document.createElement('div');
+  mainWrap.className = 'kana-detail-main';
+  const big = document.createElement('div');
+  big.className = 'kana-detail-big';
+  const hira = document.createElement('span');
+  hira.className = 'kana-detail-hira';
+  hira.textContent = item.hira || '';
+  const kata = document.createElement('span');
+  kata.className = 'kana-detail-kata';
+  kata.textContent = item.kata || '';
+  big.appendChild(hira);
+  big.appendChild(kata);
+
+  const roma = document.createElement('div');
+  roma.className = 'kana-detail-roma';
+  roma.textContent = `罗马音：${item.roma || ''}`;
+
+  const origin = document.createElement('div');
+  origin.className = 'kana-detail-origin';
+  if (item.origin) {
+    origin.textContent = `来源：${item.origin}`;
+  } else {
+    origin.textContent = '';
+  }
+
+  mainWrap.appendChild(big);
+  mainWrap.appendChild(roma);
+  if (origin.textContent) mainWrap.appendChild(origin);
+
+  popup.appendChild(closeBtn);
+  popup.appendChild(title);
+  popup.appendChild(mainWrap);
+
+  // 点击遮罩关闭，阻止弹窗内冒泡
+  mask.addEventListener('click', closeKanaDetail);
+  popup.addEventListener('click', e => e.stopPropagation());
+  mask.appendChild(popup);
+  document.body.appendChild(mask);
+  // 禁止背景滚动
+  document.body.style.overflow = 'hidden';
+
+  // ESC 关闭
+  __kanaDetailEscHandler = (e) => {
+    if (e.key === 'Escape') closeKanaDetail();
+  };
+  window.addEventListener('keydown', __kanaDetailEscHandler);
+}
+
+function closeKanaDetail() {
+  const old = document.querySelector('.kana-detail-mask');
+  if (old && old.parentNode) old.parentNode.removeChild(old);
+  // 恢复背景滚动
+  document.body.style.overflow = '';
+  if (__kanaDetailEscHandler) {
+    window.removeEventListener('keydown', __kanaDetailEscHandler);
+    __kanaDetailEscHandler = null;
+  }
+}
 
 function setPracticeType(type) {
   practiceType = type;
