@@ -273,6 +273,7 @@ function setPracticeType(type) {
   total = 0;
   updateScore();
   currentList = kanaGroups[0].list; // 只用清音练习，可扩展
+  clearOptions();
   nextKana();
   document.querySelectorAll('.practice-mode button').forEach(btn => btn.classList.remove('active'));
   document.getElementById(type + '-btn').classList.add('active');
@@ -282,7 +283,9 @@ function nextKana() {
   currentIndex = Math.floor(Math.random() * currentList.length);
   document.getElementById('random-kana').textContent = currentList[currentIndex][practiceType];
   document.getElementById('result').textContent = '';
-  generateOptions();
+  clearOptions();
+  // 小延时后生成，避免移动端残留活跃态
+  setTimeout(generateOptions, 0);
 }
 
 function generateOptions() {
@@ -316,8 +319,7 @@ function checkAnswer(btn, selected) {
     document.getElementById('result').style.color = 'green';
     updateScore();
     setTimeout(() => {
-      document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-      document.querySelectorAll('.option-btn').forEach(b => b.disabled = false);
+      clearOptions();
       nextKana();
     }, 600);
   } else {
@@ -325,8 +327,7 @@ function checkAnswer(btn, selected) {
     document.getElementById('result').style.color = 'red';
     updateScore();
     setTimeout(() => {
-      document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-      document.querySelectorAll('.option-btn').forEach(b => b.disabled = false);
+      clearOptions();
       nextKana();
     }, 1200);
   }
@@ -335,6 +336,21 @@ function checkAnswer(btn, selected) {
 function updateScore() {
   document.getElementById('score').textContent = score;
   document.getElementById('total').textContent = total;
+}
+
+function clearOptions() {
+  const optionsDiv = document.getElementById('options');
+  if (optionsDiv) optionsDiv.innerHTML = '';
+}
+
+// 清空重来
+function resetPractice() {
+  score = 0;
+  total = 0;
+  updateScore();
+  document.getElementById('result').textContent = '';
+  clearOptions();
+  nextKana();
 }
 
 // 页面切换
