@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日语五十音图学习</title>
+    <style>
+        body { font-family: 'Segoe UI', 'Hiragino Sans', Arial, sans-serif; background: #f7f7fa; margin: 0; padding: 0; }
+        header { background: #4a90e2; color: #fff; padding: 1.5rem 0; text-align: center; }
+        main { max-width: 900px; margin: 2rem auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px #0001; padding: 2rem; }
+        h2 { color: #4a90e2; margin-top: 2rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: center; font-size: 1.1rem; }
+        th { background: #eaf4ff; }
+        .kana { font-size: 1.5rem; font-weight: bold; }
+        .practice { margin-top: 2rem; padding: 1rem; background: #eaf4ff; border-radius: 8px; }
+        .practice input { font-size: 1.2rem; padding: 0.3rem 0.6rem; margin-right: 0.5rem; }
+        .practice button { font-size: 1.1rem; padding: 0.3rem 1rem; background: #4a90e2; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        .practice button:hover { background: #357abd; }
+        .result { margin-top: 0.5rem; font-weight: bold; }
+        @media (max-width: 600px) { main { padding: 1rem; } table { font-size: 0.9rem; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>日语五十音图学习</h1>
+        <nav>
+            <button class="nav-btn" onclick="showPage('intro')">简介</button>
+            <button class="nav-btn" onclick="showPage('table')">一览表</button>
+            <button class="nav-btn" onclick="showPage('practice')">假名练习</button>
+        </nav>
+    </header>
+    <main>
+        <section id="intro-page" class="page">
+            <h2>五十音图简介</h2>
+            <p>日语五十音图是学习日语的基础，由平假名和片假名组成。掌握五十音图有助于正确发音、记忆单词和理解日语语法。建议先熟悉清音，再学习浊音、拗音等扩展假名，并通过反复练习巩固记忆。</p>
+        </section>
+        <section id="table-page" class="page" style="display:none;">
+            <h2>五十音图一览表</h2>
+            <div class="kana-table">
+                <h3>清音</h3>
+                <table>
+                    <tr>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                    </tr>
+                    <tr><td>a</td><td>あ</td><td>ア</td><td>i</td><td>い</td><td>イ</td><td>u</td><td>う</td><td>ウ</td><td>e</td><td>え</td><td>エ</td><td>o</td><td>お</td><td>オ</td></tr>
+                    <tr><td>ka</td><td>か</td><td>カ</td><td>ki</td><td>き</td><td>キ</td><td>ku</td><td>く</td><td>ク</td><td>ke</td><td>け</td><td>ケ</td><td>ko</td><td>こ</td><td>コ</td></tr>
+                    <tr><td>sa</td><td>さ</td><td>サ</td><td>shi</td><td>し</td><td>シ</td><td>su</td><td>す</td><td>ス</td><td>se</td><td>せ</td><td>セ</td><td>so</td><td>そ</td><td>ソ</td></tr>
+                    <tr><td>ta</td><td>た</td><td>タ</td><td>chi</td><td>ち</td><td>チ</td><td>tsu</td><td>つ</td><td>ツ</td><td>te</td><td>て</td><td>テ</td><td>to</td><td>と</td><td>ト</td></tr>
+                    <tr><td>na</td><td>な</td><td>ナ</td><td>ni</td><td>に</td><td>ニ</td><td>nu</td><td>ぬ</td><td>ヌ</td><td>ne</td><td>ね</td><td>ネ</td><td>no</td><td>の</td><td>ノ</td></tr>
+                    <tr><td>ha</td><td>は</td><td>ハ</td><td>hi</td><td>ひ</td><td>ヒ</td><td>fu</td><td>ふ</td><td>フ</td><td>he</td><td>へ</td><td>ヘ</td><td>ho</td><td>ほ</td><td>ホ</td></tr>
+                    <tr><td>ma</td><td>ま</td><td>マ</td><td>mi</td><td>み</td><td>ミ</td><td>mu</td><td>む</td><td>ム</td><td>me</td><td>め</td><td>メ</td><td>mo</td><td>も</td><td>モ</td></tr>
+                    <tr><td>ya</td><td>や</td><td>ヤ</td><td></td><td></td><td></td><td>yu</td><td>ゆ</td><td>ユ</td><td></td><td></td><td></td><td>yo</td><td>よ</td><td>ヨ</td></tr>
+                    <tr><td>ra</td><td>ら</td><td>ラ</td><td>ri</td><td>り</td><td>リ</td><td>ru</td><td>る</td><td>ル</td><td>re</td><td>れ</td><td>レ</td><td>ro</td><td>ろ</td><td>ロ</td></tr>
+                    <tr><td>wa</td><td>わ</td><td>ワ</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>wo</td><td>を</td><td>ヲ</td></tr>
+                    <tr><td>n</td><td>ん</td><td>ン</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                </table>
+                <h3>浊音</h3>
+                <table>
+                    <tr>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                    </tr>
+                    <tr><td>ga</td><td>が</td><td>ガ</td><td>gi</td><td>ぎ</td><td>ギ</td><td>gu</td><td>ぐ</td><td>グ</td><td>ge</td><td>げ</td><td>ゲ</td><td>go</td><td>ご</td><td>ゴ</td></tr>
+                    <tr><td>za</td><td>ざ</td><td>ザ</td><td>ji</td><td>じ</td><td>ジ</td><td>zu</td><td>ず</td><td>ズ</td><td>ze</td><td>ぜ</td><td>ゼ</td><td>zo</td><td>ぞ</td><td>ゾ</td></tr>
+                    <tr><td>da</td><td>だ</td><td>ダ</td><td>ji</td><td>ぢ</td><td>ヂ</td><td>zu</td><td>づ</td><td>ヅ</td><td>de</td><td>で</td><td>デ</td><td>do</td><td>ど</td><td>ド</td></tr>
+                    <tr><td>ba</td><td>ば</td><td>バ</td><td>bi</td><td>び</td><td>ビ</td><td>bu</td><td>ぶ</td><td>ブ</td><td>be</td><td>べ</td><td>ベ</td><td>bo</td><td>ぼ</td><td>ボ</td></tr>
+                </table>
+                <h3>半浊音</h3>
+                <table>
+                    <tr>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                    </tr>
+                    <tr><td>pa</td><td>ぱ</td><td>パ</td><td>pi</td><td>ぴ</td><td>ピ</td><td>pu</td><td>ぷ</td><td>プ</td><td>pe</td><td>ぺ</td><td>ペ</td><td>po</td><td>ぽ</td><td>ポ</td></tr>
+                </table>
+                <h3>拗音</h3>
+                <table>
+                    <tr>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                        <th>罗马音</th><th>平假名</th><th>片假名</th>
+                    </tr>
+                    <tr><td>kya</td><td>きゃ</td><td>キャ</td><td>kyu</td><td>きゅ</td><td>キュ</td><td>kyo</td><td>きょ</td><td>キョ</td><td>sha</td><td>しゃ</td><td>シャ</td><td>shu</td><td>しゅ</td><td>シュ</td></tr>
+                    <tr><td>sho</td><td>しょ</td><td>ショ</td><td>cha</td><td>ちゃ</td><td>チャ</td><td>chu</td><td>ちゅ</td><td>チュ</td><td>cho</td><td>ちょ</td><td>チョ</td><td>nya</td><td>にゃ</td><td>ニャ</td></tr>
+                    <tr><td>nyu</td><td>にゅ</td><td>ニュ</td><td>nyo</td><td>にょ</td><td>ニョ</td><td>hya</td><td>ひゃ</td><td>ヒャ</td><td>hyu</td><td>ひゅ</td><td>ヒュ</td><td>hyo</td><td>ひょ</td><td>ヒョ</td></tr>
+                    <tr><td>mya</td><td>みゃ</td><td>ミャ</td><td>myu</td><td>みゅ</td><td>ミュ</td><td>myo</td><td>みょ</td><td>ミョ</td><td>rya</td><td>りゃ</td><td>リャ</td><td>ryu</td><td>りゅ</td><td>リュ</td></tr>
+                    <tr><td>ryo</td><td>りょ</td><td>リョ</td><td>gya</td><td>ぎゃ</td><td>ギャ</td><td>gyu</td><td>ぎゅ</td><td>ギュ</td><td>gyo</td><td>ぎょ</td><td>ギョ</td><td>ja</td><td>じゃ</td><td>ジャ</td></tr>
+                    <tr><td>ju</td><td>じゅ</td><td>ジュ</td><td>jo</td><td>じょ</td><td>ジョ</td><td>bya</td><td>びゃ</td><td>ビャ</td><td>byu</td><td>びゅ</td><td>ビュ</td><td>byo</td><td>びょ</td><td>ビョ</td></tr>
+                    <tr><td>pya</td><td>ぴゃ</td><td>ピャ</td><td>pyu</td><td>ぴゅ</td><td>ピュ</td><td>pyo</td><td>ぴょ</td><td>ピョ</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                </table>
+            </div>
+        </section>
+        <section id="practice-page" class="page" style="display:none;">
+            <h2>假名练习</h2>
+            <div class="practice-mode">
+                <button onclick="setPracticeType('hiragana')">平假名练习</button>
+                <button onclick="setPracticeType('katakana')">片假名练习</button>
+            </div>
+            <div id="practice-area">
+                <div class="score">分数：<span id="score">0</span> / <span id="total">0</span></div>
+                <span id="random-kana" class="kana">あ</span>
+                <div id="options"></div>
+                <button onclick="nextKana()">换一个</button>
+                <div class="result" id="result"></div>
+            </div>
+        </section>
+    </main>
+    <script>
+        // 页面切换
+        function showPage(page) {
+            document.getElementById('intro-page').style.display = (page === 'intro') ? '' : 'none';
+            document.getElementById('table-page').style.display = (page === 'table') ? '' : 'none';
+            document.getElementById('practice-page').style.display = (page === 'practice') ? '' : 'none';
+        }
+        // 假名数据
+        const kanaList = [
+            {roma: 'a', hiragana: 'あ', katakana: 'ア'}, {roma: 'i', hiragana: 'い', katakana: 'イ'}, {roma: 'u', hiragana: 'う', katakana: 'ウ'}, {roma: 'e', hiragana: 'え', katakana: 'エ'}, {roma: 'o', hiragana: 'お', katakana: 'オ'},
+            {roma: 'ka', hiragana: 'か', katakana: 'カ'}, {roma: 'ki', hiragana: 'き', katakana: 'キ'}, {roma: 'ku', hiragana: 'く', katakana: 'ク'}, {roma: 'ke', hiragana: 'け', katakana: 'ケ'}, {roma: 'ko', hiragana: 'こ', katakana: 'コ'},
+            {roma: 'sa', hiragana: 'さ', katakana: 'サ'}, {roma: 'shi', hiragana: 'し', katakana: 'シ'}, {roma: 'su', hiragana: 'す', katakana: 'ス'}, {roma: 'se', hiragana: 'せ', katakana: 'セ'}, {roma: 'so', hiragana: 'そ', katakana: 'ソ'},
+            {roma: 'ta', hiragana: 'た', katakana: 'タ'}, {roma: 'chi', hiragana: 'ち', katakana: 'チ'}, {roma: 'tsu', hiragana: 'つ', katakana: 'ツ'}, {roma: 'te', hiragana: 'て', katakana: 'テ'}, {roma: 'to', hiragana: 'と', katakana: 'ト'},
+            {roma: 'na', hiragana: 'な', katakana: 'ナ'}, {roma: 'ni', hiragana: 'に', katakana: 'ニ'}, {roma: 'nu', hiragana: 'ぬ', katakana: 'ヌ'}, {roma: 'ne', hiragana: 'ね', katakana: 'ネ'}, {roma: 'no', hiragana: 'の', katakana: 'ノ'},
+            {roma: 'ha', hiragana: 'は', katakana: 'ハ'}, {roma: 'hi', hiragana: 'ひ', katakana: 'ヒ'}, {roma: 'fu', hiragana: 'ふ', katakana: 'フ'}, {roma: 'he', hiragana: 'へ', katakana: 'ヘ'}, {roma: 'ho', hiragana: 'ほ', katakana: 'ホ'},
+            {roma: 'ma', hiragana: 'ま', katakana: 'マ'}, {roma: 'mi', hiragana: 'み', katakana: 'ミ'}, {roma: 'mu', hiragana: 'む', katakana: 'ム'}, {roma: 'me', hiragana: 'め', katakana: 'メ'}, {roma: 'mo', hiragana: 'も', katakana: 'モ'},
+            {roma: 'ya', hiragana: 'や', katakana: 'ヤ'}, {roma: 'yu', hiragana: 'ゆ', katakana: 'ユ'}, {roma: 'yo', hiragana: 'よ', katakana: 'ヨ'},
+            {roma: 'ra', hiragana: 'ら', katakana: 'ラ'}, {roma: 'ri', hiragana: 'り', katakana: 'リ'}, {roma: 'ru', hiragana: 'る', katakana: 'ル'}, {roma: 're', hiragana: 'れ', katakana: 'レ'}, {roma: 'ro', hiragana: 'ろ', katakana: 'ロ'},
+            {roma: 'wa', hiragana: 'わ', katakana: 'ワ'}, {roma: 'wo', hiragana: 'を', katakana: 'ヲ'}, {roma: 'n', hiragana: 'ん', katakana: 'ン'}
+        ];
+        let currentIndex = 0;
+        let practiceType = 'hiragana';
+        let score = 0;
+        let total = 0;
+        function setPracticeType(type) {
+            practiceType = type;
+            score = 0;
+            total = 0;
+            updateScore();
+            nextKana();
+        }
+        function nextKana() {
+            currentIndex = Math.floor(Math.random() * kanaList.length);
+            document.getElementById('random-kana').textContent = kanaList[currentIndex][practiceType];
+            document.getElementById('result').textContent = '';
+            generateOptions();
+        }
+        function generateOptions() {
+            const correct = kanaList[currentIndex].roma;
+            let options = [correct];
+            while (options.length < 4) {
+                let idx = Math.floor(Math.random() * kanaList.length);
+                let roma = kanaList[idx].roma;
+                if (!options.includes(roma)) options.push(roma);
+            }
+            options = options.sort(() => Math.random() - 0.5);
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.textContent = opt;
+                btn.className = 'option-btn';
+                btn.onclick = () => checkAnswer(opt);
+                optionsDiv.appendChild(btn);
+            });
+        }
+        function checkAnswer(selected) {
+            const correct = kanaList[currentIndex].roma;
+            total++;
+            if (selected === correct) {
+                score++;
+                document.getElementById('result').textContent = '正确！';
+                document.getElementById('result').style.color = 'green';
+                updateScore();
+                setTimeout(nextKana, 600);
+            } else {
+                document.getElementById('result').textContent = `错误，正确答案是：${correct}`;
+                document.getElementById('result').style.color = 'red';
+                updateScore();
+            }
+        }
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = total;
+        }
+        // 初始化
+        showPage('intro');
+        nextKana();
+    </script>
+    <style>
+        .nav-btn { background: #eaf4ff; color: #4a90e2; border: none; padding: 0.7rem 1.5rem; margin: 0 0.5rem; border-radius: 6px; font-size: 1.1rem; cursor: pointer; }
+        .nav-btn:hover { background: #4a90e2; color: #fff; }
+        .page { margin-top: 2rem; }
+        .kana-table table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .kana-table th, .kana-table td { border: 1px solid #ddd; padding: 0.4rem; text-align: center; font-size: 1.1rem; }
+        .kana-table th { background: #eaf4ff; }
+        .kana-table h3 { color: #357abd; margin-top: 1.5rem; }
+        .practice-mode { margin-bottom: 1rem; }
+        .practice-mode button { margin-right: 1rem; background: #eaf4ff; color: #4a90e2; border: none; padding: 0.5rem 1.2rem; border-radius: 6px; font-size: 1rem; cursor: pointer; }
+        .practice-mode button:hover { background: #4a90e2; color: #fff; }
+        .practice { margin-top: 2rem; padding: 1rem; background: #eaf4ff; border-radius: 8px; }
+        .score { font-size: 1.1rem; margin-bottom: 0.7rem; color: #357abd; }
+        .option-btn { font-size: 1.1rem; padding: 0.3rem 1.2rem; margin: 0.3rem 0.7rem 0.3rem 0; background: #fff; color: #4a90e2; border: 1px solid #4a90e2; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+        .option-btn:hover { background: #4a90e2; color: #fff; }
+        .practice button { font-size: 1.1rem; padding: 0.3rem 1rem; background: #4a90e2; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        .practice button:hover { background: #357abd; }
+        .result { margin-top: 0.5rem; font-weight: bold; }
+        @media (max-width: 600px) { .kana-table table { font-size: 0.9rem; } .nav-btn { padding: 0.5rem 0.7rem; font-size: 1rem; } }
+    </style>
+</body>
+</html>
