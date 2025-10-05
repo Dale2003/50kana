@@ -61,7 +61,7 @@ main { max-width: 900px; margin: 2rem auto; background: #fff; border-radius: 12p
 .kana-hira { font-size: 1.5rem; color: #222; font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', 'Noto Sans JP', 'MS PGothic', system-ui, -apple-system, sans-serif; }
 .kana-kata { font-size: 1.3rem; color: #888; font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', 'Noto Sans JP', 'MS PGothic', system-ui, -apple-system, sans-serif; }
 .practice-mode { margin-bottom: 1rem; }
-.practice-mode button { margin-right: 1rem; background: #eaf4ff; color: #4a90e2; border: none; padding: 0.5rem 1.2rem; border-radius: 6px; font-size: 1rem; cursor: pointer; }
+.practice-mode button { margin-top: -1rem; margin-right: 1rem; margin-bottom: 1rem; background: #eaf4ff; color: #4a90e2; border: none; padding: 0.5rem 1.2rem; border-radius: 6px; font-size: 1rem; cursor: pointer; }
 .practice-mode button.active { background: #4a90e2; color: #fff; }
 .practice-mode button:hover { background: #4a90e2; color: #fff; }
 .practice { margin-top: 2rem; padding: 1rem; background: #eaf4ff; border-radius: 8px; }
