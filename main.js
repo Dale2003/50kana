@@ -186,6 +186,8 @@ let score = 0;
 let total = 0;
 let currentIndex = 0;
 let currentList = [];
+// 在 hk 模式下记录当前题目显示的是哪种脚本：'hira' 或 'kata'
+let currentShownScript = null;
 
 // 弹窗：显示假名详情
 let __kanaDetailEscHandler = null;
@@ -281,7 +283,14 @@ function setPracticeType(type) {
 
 function nextKana() {
   currentIndex = Math.floor(Math.random() * currentList.length);
-  document.getElementById('random-kana').textContent = currentList[currentIndex][practiceType];
+  if (practiceType === 'hk') {
+    // 随机显示平或片中的一个，让用户选对应另一种
+    currentShownScript = Math.random() < 0.5 ? 'hira' : 'kata';
+    document.getElementById('random-kana').textContent = currentList[currentIndex][currentShownScript];
+  } else {
+    currentShownScript = null;
+    document.getElementById('random-kana').textContent = currentList[currentIndex][practiceType];
+  }
   document.getElementById('result').textContent = '';
   clearOptions();
   // 小延时后生成，避免移动端残留活跃态
@@ -289,14 +298,28 @@ function nextKana() {
 }
 
 function generateOptions() {
-  const correct = currentList[currentIndex].roma;
-  let options = [correct];
-  while (options.length < 4) {
-    let idx = Math.floor(Math.random() * currentList.length);
-    let roma = currentList[idx].roma;
-    if (!options.includes(roma)) options.push(roma);
+  let options;
+  if (practiceType === 'hk') {
+    // 选项为另一种脚本（显示平则选片，显示片则选平）
+    const targetScript = currentShownScript === 'hira' ? 'kata' : 'hira';
+    const correct = currentList[currentIndex][targetScript];
+    options = [correct];
+    while (options.length < 4) {
+      let idx = Math.floor(Math.random() * currentList.length);
+      let cand = currentList[idx][targetScript];
+      if (!options.includes(cand)) options.push(cand);
+    }
+    options = options.sort(() => Math.random() - 0.5);
+  } else {
+    const correct = currentList[currentIndex].roma;
+    options = [correct];
+    while (options.length < 4) {
+      let idx = Math.floor(Math.random() * currentList.length);
+      let roma = currentList[idx].roma;
+      if (!options.includes(roma)) options.push(roma);
+    }
+    options = options.sort(() => Math.random() - 0.5);
   }
-  options = options.sort(() => Math.random() - 0.5);
   const optionsDiv = document.getElementById('options');
   optionsDiv.innerHTML = '';
   options.forEach(opt => {
@@ -309,7 +332,13 @@ function generateOptions() {
 }
 
 function checkAnswer(btn, selected) {
-  const correct = currentList[currentIndex].roma;
+  let correct;
+  if (practiceType === 'hk') {
+    const targetScript = currentShownScript === 'hira' ? 'kata' : 'hira';
+    correct = currentList[currentIndex][targetScript];
+  } else {
+    correct = currentList[currentIndex].roma;
+  }
   total++;
   document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
   btn.classList.add('selected');

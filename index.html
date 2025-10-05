@@ -23,6 +23,7 @@
             <div class="practice-mode">
                 <button id="hira-btn" onclick="setPracticeType('hira')">平假名练习</button>
                 <button id="kata-btn" onclick="setPracticeType('kata')">片假名练习</button>
+                <button id="hk-btn" onclick="setPracticeType('hk')">平假名片假名互选</button>
             </div>
             <div id="practice-area">
                 <div class="score">分数：<span id="score">0</span> / <span id="total">0</span></div>
@@ -53,6 +54,7 @@
         .practice-mode { margin-bottom: 1rem; }
         .practice-mode button { margin-right: 1rem; background: #eaf4ff; color: #4a90e2; border: none; padding: 0.5rem 1.2rem; border-radius: 6px; font-size: 1rem; cursor: pointer; }
         .practice-mode button:hover { background: #4a90e2; color: #fff; }
+    .practice-mode button.active { background: #4a90e2; color: #fff; }
         .practice { margin-top: 2rem; padding: 1rem; background: #eaf4ff; border-radius: 8px; }
         .score { font-size: 1.1rem; margin-bottom: 0.7rem; color: #357abd; }
         .option-btn { font-size: 1.1rem; padding: 0.3rem 1.2rem; margin: 0.3rem 0.7rem 0.3rem 0; background: #fff; color: #4a90e2; border: 1px solid #4a90e2; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
