@@ -24,14 +24,33 @@
                 <button id="hira-btn" onclick="setPracticeType('hira')">平假名练习</button>
                 <button id="kata-btn" onclick="setPracticeType('kata')">片假名练习</button>
                 <button id="hk-btn" onclick="setPracticeType('hk')">平假名片假名互选</button>
+                <button id="word-btn" onclick="setPracticeType('word')">单词练习</button>
             </div>
             <div id="practice-area">
-                <div class="score">分数：<span id="score">0</span> / <span id="total">0</span></div>
+                <div id="kana-score" class="score">分数：<span id="score">0</span> / <span id="total">0</span></div>
                 <span id="random-kana" class="kana">あ</span>
                 <div id="options"></div>
                 <div class="result" id="result"></div>
                 <div class="practice-controls">
                     <button id="reset-btn" class="reset-btn" onclick="resetPractice()">清空重新开始</button>
+                </div>
+                <!-- 单词练习区域 -->
+                <div id="word-practice" style="display:none; margin-top:1rem;">
+                    <div class="score">单词分数：<span id="word-score">0</span> / <span id="word-total">0</span></div>
+                    <div id="word-meaning" style="font-size:1.2rem; margin:0.6rem 0; color:#357abd;">这里显示中文意思</div>
+                    <div style="margin-bottom:0.6rem;">
+                        <label>假名（输入平假名或片假名）：</label>
+                        <input id="word-kana-input" type="text" placeholder="例如 くうこう 或 クウコウ">
+                    </div>
+                    <div style="margin-bottom:0.6rem;">
+                        <label>日语书写（汉字或片/平混写）：</label>
+                        <input id="word-kanji-input" type="text" placeholder="例如 空港 或 コインロッカー">
+                    </div>
+                    <div>
+                        <button id="word-submit" onclick="checkWordAnswer()">提交答案</button>
+                        <button id="word-skip" onclick="nextWord()">跳过</button>
+                    </div>
+                    <div id="word-result" class="result" style="margin-top:0.5rem;"></div>
                 </div>
             </div>
         </section>

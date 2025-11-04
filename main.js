@@ -189,6 +189,26 @@ let currentList = [];
 // 在 hk 模式下记录当前题目显示的是哪种脚本：'hira' 或 'kata'
 let currentShownScript = null;
 
+// 单词练习数据（中文意思、假名、日语写法多种可能）
+const wordList = [
+  { meaning: '机场', kana: 'くうこう', forms: ['空港', 'クウコウ'] },
+  { meaning: '问询处', kana: 'あんないじょ', forms: ['案内所', 'インフォメーション'] },
+  { meaning: '（货币）兑换', kana: 'りょうがえ', forms: ['両替'] },
+  { meaning: '订单，点单', kana: 'ちゅうもん', forms: ['注文'] },
+  { meaning: '结账', kana: 'かいけい', forms: ['会計'] },
+  { meaning: '支付', kana: 'けっさい', forms: ['決済'] },
+  { meaning: '寄存柜', kana: 'コインロッカー', forms: ['コインロッカー'] },
+  { meaning: '（办理）入住', kana: 'チェックイン', forms: ['チェックイン'] },
+  { meaning: '~天~晚', kana: 'ぱく にち', forms: ['~泊~日', '泊 日', '泊日'] },
+  { meaning: '盖饭', kana: 'どん', forms: ['~丼', '丼'] },
+  { meaning: '猪排', kana: 'とんかつ', forms: ['豚カツ'] },
+  { meaning: '烤串', kana: 'やきとり', forms: ['焼き鳥'] }
+];
+
+let wordIndex = 0;
+let wordScore = 0;
+let wordTotal = 0;
+
 // 弹窗：显示假名详情
 let __kanaDetailEscHandler = null;
 function showKanaDetail(item) {
@@ -276,7 +296,31 @@ function setPracticeType(type) {
   updateScore();
   currentList = kanaGroups[0].list; // 只用清音练习，可扩展
   clearOptions();
-  nextKana();
+  // 单词练习模式特殊显示
+  const wordArea = document.getElementById('word-practice');
+  const randomKanaEl = document.getElementById('random-kana');
+  const optionsDiv = document.getElementById('options');
+  const kanaScoreEl = document.getElementById('kana-score');
+  const resetBtn = document.getElementById('reset-btn');
+  if (type === 'word') {
+    wordArea.style.display = '';
+    document.getElementById('practice-area').scrollIntoView({behavior:'smooth'});
+    wordScore = 0; wordTotal = 0; updateWordScore();
+    nextWord();
+    // 隐藏平/片假名题干和选项区
+    if (randomKanaEl) randomKanaEl.style.display = 'none';
+    if (optionsDiv) optionsDiv.style.display = 'none';
+    if (kanaScoreEl) kanaScoreEl.style.display = 'none';
+    if (resetBtn) resetBtn.style.display = 'none';
+  } else {
+    if (wordArea) wordArea.style.display = 'none';
+    // 显示假名题干和选项区并出题
+    if (randomKanaEl) randomKanaEl.style.display = '';
+    if (optionsDiv) optionsDiv.style.display = '';
+    nextKana();
+    if (kanaScoreEl) kanaScoreEl.style.display = '';
+    if (resetBtn) resetBtn.style.display = '';
+  }
   document.querySelectorAll('.practice-mode button').forEach(btn => btn.classList.remove('active'));
   document.getElementById(type + '-btn').classList.add('active');
 }
@@ -370,6 +414,84 @@ function updateScore() {
 function clearOptions() {
   const optionsDiv = document.getElementById('options');
   if (optionsDiv) optionsDiv.innerHTML = '';
+}
+
+// ---------- 单词练习相关 ----------
+function normalizeKana(input) {
+  // 简单标准化：去空格，转换大写片假名为平假名用于比较
+  if (!input) return '';
+  input = input.trim();
+  // 将片假名转换为平假名（简单映射）
+  const kataStart = 0x30A0;
+  const hiraStart = 0x3040;
+  let res = '';
+  for (let ch of input) {
+    const code = ch.charCodeAt(0);
+    if (code >= 0x30A1 && code <= 0x30F6) {
+      // katakana -> hiragana
+      res += String.fromCharCode(code - 0x60);
+    } else {
+      res += ch;
+    }
+  }
+  return res;
+}
+
+function nextWord() {
+  // 随机选择一个单词
+  wordIndex = Math.floor(Math.random() * wordList.length);
+  const w = wordList[wordIndex];
+  document.getElementById('word-meaning').textContent = w.meaning;
+  document.getElementById('word-kana-input').value = '';
+  document.getElementById('word-kanji-input').value = '';
+  document.getElementById('word-result').textContent = '';
+}
+
+function updateWordScore() {
+  document.getElementById('word-score').textContent = wordScore;
+  document.getElementById('word-total').textContent = wordTotal;
+}
+
+function checkWordAnswer() {
+  const kanaInput = document.getElementById('word-kana-input').value || '';
+  const kanjiInput = document.getElementById('word-kanji-input').value || '';
+  const w = wordList[wordIndex];
+  wordTotal++;
+  let okKana = false;
+  let okKanji = false;
+  // 标准化比较假名：把片假名转成平假名再比较（并忽略大小写与空格）
+  const inKana = normalizeKana(kanaInput).replace(/\s+/g,'');
+  const targetKana = normalizeKana(w.kana).replace(/\s+/g,'');
+  if (inKana && inKana === targetKana) okKana = true;
+  // 日语写法比较：直接比对 forms 中任一项（忽略空格）
+  const inKanji = kanjiInput.replace(/\s+/g,'');
+  for (let f of w.forms) {
+    if (!f) continue;
+    if (inKanji && inKanji === f) { okKanji = true; break; }
+    // 也接受假名形式作为日语写法（有些 forms 是片假名）
+    if (normalizeKana(inKanji) === normalizeKana(f)) { okKanji = true; break; }
+  }
+  const resultDiv = document.getElementById('word-result');
+  if (okKana && okKanji) {
+    wordScore++;
+    resultDiv.textContent = '正确！假名和日语写法都正确。';
+    resultDiv.style.color = 'green';
+  } else if (okKana && !okKanji) {
+    resultDiv.textContent = `假名正确，但日语写法不正确，参考写法：${w.forms.join(' / ')}`;
+    resultDiv.style.color = 'orange';
+  } else if (!okKana && okKanji) {
+    resultDiv.textContent = `日语写法正确，但假名不正确，参考假名：${w.kana}`;
+    resultDiv.style.color = 'orange';
+  } else {
+    resultDiv.textContent = `假名和日语写法均不正确，参考：${w.kana} ， ${w.forms.join(' / ')}`;
+    resultDiv.style.color = 'red';
+  }
+  updateWordScore();
+  // 延时下一题以便用户看提示
+  setTimeout(() => {
+    document.getElementById('word-result').textContent = '';
+    nextWord();
+  }, 1200);
 }
 
 // 清空重来
