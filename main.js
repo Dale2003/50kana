@@ -487,11 +487,7 @@ function checkWordAnswer() {
     resultDiv.style.color = 'red';
   }
   updateWordScore();
-  // 延时下一题以便用户看提示
-  setTimeout(() => {
-    document.getElementById('word-result').textContent = '';
-    nextWord();
-  }, 1200);
+  // 不自动跳转下一题：结果保持显示，用户可点击“跳过/下一题”继续
 }
 
 // 清空重来
