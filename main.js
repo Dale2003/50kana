@@ -202,7 +202,10 @@ const wordList = [
   { meaning: '~天~晚', kana: 'ぱく にち', forms: ['~泊~日', '泊 日', '泊日'] },
   { meaning: '盖饭', kana: 'どん', forms: ['~丼', '丼'] },
   { meaning: '猪排', kana: 'とんかつ', forms: ['豚カツ'] },
-  { meaning: '烤串', kana: 'やきとり', forms: ['焼き鳥'] }
+  { meaning: '烤串', kana: 'やきとり', forms: ['焼き鳥'] },
+  { meaning: '检票口', kana: 'かいさつぐち', forms: ['改札口'] },
+  { meaning: '补票机', kana: 'せいさんき', forms: ['精算機'] },
+  { meaning: '售票处', kana: 'きっぷうりば', forms: ['切符売り場'] },
 ];
 
 let wordIndex = 0;
