@@ -35,14 +35,14 @@
                         <option value="spelling">拼写</option>
                     </select>
                     <select id="quiz-lesson"></select>
-                    <button id="start-quiz">开始测试</button>
+                    <button class="nav-btn" id="start-quiz">开始测试</button>
                 </div>
                 <div id="quiz-area" class="quiz-area hidden">
                     <div id="quiz-question" class="quiz-question"></div>
                     <div id="quiz-options" class="quiz-options"></div>
                     <div id="quiz-input" class="quiz-input hidden">
                         <input id="spell-input" type="text" placeholder="输入答案...">
-                        <button id="submit-spell">提交</button>
+                        <button class="nav-btn" id="submit-spell">提交</button>
                     </div>
                     <div class="quiz-footer">
                         <span id="quiz-progress"></span>
@@ -80,8 +80,8 @@
                         <input id="word-kanji-input" type="text" placeholder="例如 空港 或 コインロッカー">
                     </div>
                     <div>
-                        <button id="word-submit" onclick="checkWordAnswer()">提交答案</button>
-                        <button id="word-skip" onclick="nextWord()">跳过</button>
+                        <button class="nav-btn" id="word-submit" onclick="checkWordAnswer()">提交答案</button>
+                        <button class="nav-btn" id="word-skip" onclick="nextWord()">跳过</button>
                     </div>
                     <div id="word-result" class="result" style="margin-top:0.5rem;"></div>
                 </div>
@@ -96,7 +96,7 @@
     </footer>
     <script src="main.js"></script>
     <style>
-        .nav-btn { background: #eaf4ff; color: #4a90e2; border: none; padding: 0.7rem 1.5rem; margin: 0 0.5rem; border-radius: 6px; font-size: 1.1rem; cursor: pointer; }
+        .nav-btn { background: #eaf4ff; color: #4a90e2; border: none; padding: 0.3rem 0.8rem; margin: 0 0.3rem; border-radius: 6px; font-size: 1rem; cursor: pointer; }
         .nav-btn:hover { background: #4a90e2; color: #fff; }
         .page { margin-top: 2rem; }
         .kana-table table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
