@@ -25,6 +25,7 @@
                     <select id="lesson-filter"></select>
                     <input id="search" type="search" placeholder="搜索汉字/假名/含义">
                 </div>
+                <div id="cards-loading" class="loading">正在加载单词数据…</div>
                 <div id="cards" class="cards-grid"></div>
             </section>
             <section id="quiz-view" class="view hidden">
@@ -32,6 +33,8 @@
                     <select id="quiz-type">
                         <option value="meaning">选意思</option>
                         <option value="kana">选假名</option>
+                        <option value="kanji">给假名选汉字</option>
+                        <option value="random">随机模式</option>
                         <option value="spelling">拼写</option>
                     </select>
                     <select id="quiz-lesson"></select>
@@ -44,6 +47,7 @@
                         <input id="spell-input" type="text" placeholder="输入答案...">
                         <button class="nav-btn" id="submit-spell">提交</button>
                     </div>
+                    <div id="quiz-feedback" class="result" style="min-height:1.2rem"></div>
                     <div class="quiz-footer">
                         <span id="quiz-progress"></span>
                         <span id="quiz-score"></span>
@@ -98,6 +102,7 @@
     <style>
         .nav-btn { background: #eaf4ff; color: #4a90e2; border: none; padding: 0.3rem 0.8rem; margin: 0 0.3rem; border-radius: 6px; font-size: 1rem; cursor: pointer; margin-bottom: 0.5rem; }
         .nav-btn:hover { background: #4a90e2; color: #fff; }
+        .loading { padding: 0.8rem; color: #357abd; }
         .page { margin-top: 2rem; }
         .kana-table table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
         .kana-table th, .kana-table td { border: 1px solid #ddd; padding: 0.4rem; text-align: center; font-size: 1.1rem; }
