@@ -510,8 +510,240 @@ function showPage(page) {
 }
 
 // 初始化
-window.onload = function() {
+// --------- 单词小卡与测试（解析 word.tex） ---------
+async function loadWordsFromTex() {
+  try {
+    const resp = await fetch('assets/word.tex');
+    const tex = await resp.text();
+    return parseLongtables(tex);
+  } catch (e) {
+    console.error('加载 word.tex 失败', e);
+    return [];
+  }
+}
+
+function parseLongtables(tex) {
+  const lines = tex.split(/\r?\n/);
+  const words = [];
+  let currentLesson = '全部';
+  for (let line of lines) {
+    const lessonMatch = line.match(/\\subsubsection\{([^}]+)\}/);
+    if (lessonMatch) {
+      currentLesson = lessonMatch[1];
+      continue;
+    }
+    // match row: data lines ending with \\ \hline or \\ \hline\hline
+    const rowMatch = line.match(/^\s*([^&]+?)\s*&\s*([^&]+?)\s*&\s*([^&]+?)\s*&\s*([^&]+?)\s*&\s*(.*?)\\ \\hline(?:\\hline)?/);
+    if (rowMatch) {
+      const kanji = rowMatch[1].trim();
+      const kana = rowMatch[2].trim();
+      const meaning = rowMatch[3].trim();
+      const pos = rowMatch[4].trim();
+      const notes = rowMatch[5].trim();
+      // 跳过表头行
+      const isHeader = /漢字表示/.test(kanji) || /假名表示/.test(kana) || /含义/.test(meaning);
+      if (isHeader) continue;
+      words.push({ lesson: currentLesson, kanji, kana, meaning, pos, notes });
+    }
+  }
+  return words;
+}
+
+function setupTabs() {
+  const buttons = document.querySelectorAll('[data-tab]');
+  const views = {
+    table: document.getElementById('table-page'),
+    practice: document.getElementById('practice-page'),
+    cards: document.getElementById('cards-view'),
+    quiz: document.getElementById('quiz-view')
+  };
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      Object.values(views).forEach(v => v.classList.add('hidden'));
+      const tab = btn.dataset.tab;
+      if (views[tab]) views[tab].classList.remove('hidden');
+    });
+  });
+  // 默认激活 一览表
+  const def = document.querySelector('[data-tab="table"]');
+  if (def) def.click();
+}
+
+function populateLessonFilters(words) {
+  const lessons = Array.from(new Set(words.map(w => w.lesson)));
+  const filter = document.getElementById('lesson-filter');
+  const quizLesson = document.getElementById('quiz-lesson');
+  if (filter) {
+    filter.innerHTML = '<option value="全部">全部</option>' + lessons.map(l => `<option value="${l}">${l}</option>`).join('');
+    filter.addEventListener('change', () => renderCards(words));
+  }
+  if (quizLesson) {
+    quizLesson.innerHTML = '<option value="全部">全部</option>' + lessons.map(l => `<option value="${l}">${l}</option>`).join('');
+  }
+}
+
+function renderCards(words) {
+  const container = document.getElementById('cards');
+  if (!container) return;
+  const lessonSel = document.getElementById('lesson-filter');
+  const q = (document.getElementById('search')?.value || '').trim();
+  let list = words;
+  const lesson = lessonSel?.value || '全部';
+  if (lesson && lesson !== '全部') list = list.filter(w => w.lesson === lesson);
+  if (q) {
+    const qlower = q.toLowerCase();
+    list = list.filter(w => (w.kanji + w.kana + w.meaning).toLowerCase().includes(qlower));
+  }
+  container.innerHTML = '';
+  list.forEach(w => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    // 初始：显示 kanji、kana、pos（不显示中文释义、不显示notes）
+    const titleText = w.kanji || w.kana || '';
+    const kanaText = w.kana || '';
+    const posText = w.pos || '';
+    card.innerHTML = `
+      <div class="title">${titleText}</div>
+      <div class="subtitle">${kanaText}</div>
+      <div class="meaning">${posText}</div>
+    `;
+    // 点击后：显示 kanji、kana、meaning（中文释义）
+    let flipped = false;
+    card.addEventListener('click', () => {
+      flipped = !flipped;
+      const meaningEl = card.querySelector('.meaning');
+      meaningEl.textContent = flipped ? (w.meaning || '') : (posText);
+    });
+    container.appendChild(card);
+  });
+}
+
+function setupSearch(words) {
+  const input = document.getElementById('search');
+  if (input) input.addEventListener('input', () => renderCards(words));
+}
+
+// Quiz
+function setupQuiz(words) {
+  const startBtn = document.getElementById('start-quiz');
+  if (!startBtn) return;
+  startBtn.addEventListener('click', () => startQuiz(words));
+}
+
+let quizState = { list: [], idx: 0, score: 0, total: 0, type: 'meaning' };
+
+function startQuiz(words) {
+  const type = document.getElementById('quiz-type')?.value || 'meaning';
+  const lesson = document.getElementById('quiz-lesson')?.value || '全部';
+  let list = words;
+  if (lesson && lesson !== '全部') list = list.filter(w => w.lesson === lesson);
+  // 过滤空项
+  list = list.filter(w => w.kana && w.meaning);
+  // 打乱
+  list = list.sort(() => Math.random() - 0.5).slice(0, 20);
+  quizState = { list, idx: 0, score: 0, total: 0, type };
+  document.getElementById('quiz-area').classList.remove('hidden');
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const qEl = document.getElementById('quiz-question');
+  const optsEl = document.getElementById('quiz-options');
+  const inputWrap = document.getElementById('quiz-input');
+  const spellInput = document.getElementById('spell-input');
+  const submitSpell = document.getElementById('submit-spell');
+  const { list, idx, type } = quizState;
+  if (!list[idx]) return;
+  const w = list[idx];
+  document.getElementById('quiz-progress').textContent = `${idx + 1}/${list.length}`;
+  document.getElementById('quiz-score').textContent = `得分：${quizState.score}/${quizState.total}`;
+  optsEl.innerHTML = '';
+  inputWrap.classList.add('hidden');
+  if (type === 'meaning') {
+    qEl.textContent = `假名：${w.kana}`;
+    const options = sampleOptions(list, w.meaning, x => x.meaning);
+    options.forEach(opt => appendOption(optsEl, opt, w.meaning));
+  } else if (type === 'kana') {
+    qEl.textContent = `汉字/词：${w.kanji || w.meaning}`;
+    const options = sampleOptions(list, w.kana, x => x.kana);
+    options.forEach(opt => appendOption(optsEl, opt, w.kana));
+  } else {
+    qEl.textContent = `请拼写假名：${w.meaning}`;
+    inputWrap.classList.remove('hidden');
+    spellInput.value = '';
+    submitSpell.onclick = () => checkSpell(spellInput.value, w.kana);
+  }
+}
+
+function sampleOptions(list, correct, picker) {
+  const options = new Set([correct]);
+  while (options.size < 4) {
+    const cand = picker(list[Math.floor(Math.random() * list.length)]);
+    options.add(cand);
+  }
+  return Array.from(options).sort(() => Math.random() - 0.5);
+}
+
+function appendOption(container, text, correct) {
+  const div = document.createElement('div');
+  div.className = 'option';
+  div.textContent = text;
+  div.onclick = () => checkChoice(div, text, correct);
+  container.appendChild(div);
+}
+
+function nextQuiz() {
+  quizState.idx++;
+  if (quizState.idx >= quizState.list.length) {
+    document.getElementById('quiz-question').textContent = '测试结束！';
+    document.getElementById('quiz-options').innerHTML = '';
+    document.getElementById('quiz-input').classList.add('hidden');
+    return;
+  }
+  renderQuizQuestion();
+}
+
+function checkChoice(node, selected, correct) {
+  quizState.total++;
+  if (selected === correct) {
+    quizState.score++;
+    node.classList.add('correct');
+  } else {
+    node.classList.add('wrong');
+  }
+  document.getElementById('quiz-score').textContent = `得分：${quizState.score}/${quizState.total}`;
+  // 禁用所有选项
+  document.querySelectorAll('.option').forEach(o => o.style.pointerEvents = 'none');
+  setTimeout(nextQuiz, 700);
+}
+
+function checkSpell(input, correct) {
+  quizState.total++;
+  if (normalizeKana(input.trim()) === normalizeKana(correct.trim())) {
+    quizState.score++;
+    document.getElementById('quiz-input').classList.add('correct');
+  } else {
+    document.getElementById('quiz-input').classList.add('wrong');
+  }
+  document.getElementById('quiz-score').textContent = `得分：${quizState.score}/${quizState.total}`;
+  setTimeout(() => {
+    document.getElementById('quiz-input').classList.remove('correct', 'wrong');
+    nextQuiz();
+  }, 600);
+}
+
+window.onload = async function() {
+  // 初始化四个视图
+  setupTabs();
+  // 渲染五十音一览表与假名练习初始
   renderKanaTable();
-  showPage('table');
   setPracticeType('hira');
+  // 加载并渲染单词相关视图
+  const words = await loadWordsFromTex();
+  populateLessonFilters(words);
+  setupSearch(words);
+  renderCards(words);
+  setupQuiz(words);
 };

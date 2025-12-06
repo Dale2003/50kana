@@ -3,23 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日语五十音图学习</title>
+    <title>初级日语学习</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-</head>
+<html>
 <body>
     <header>
-        <h1>日语五十音图学习</h1>
+        <h1>初级日语学习</h1>
         <nav>
-            <button class="nav-btn" onclick="showPage('table')">一览表</button>
-            <button class="nav-btn" onclick="showPage('practice')">假名练习</button>
+            <button class="nav-btn" data-tab="table">假名一览表</button>
+            <button class="nav-btn" data-tab="practice">假名练习</button>
+            <button class="nav-btn" data-tab="cards">单词小卡</button>
+            <button class="nav-btn" data-tab="quiz">单词练习</button>
         </nav>
     </header>
-    <main>
-        <section id="table-page" class="page" style="display:none;"></section>
-        <section id="practice-page" class="page" style="display:none;">
+        <main id="app">
+            <section id="cards-view" class="view hidden">
+                <div class="controls">
+                    <select id="lesson-filter"></select>
+                    <input id="search" type="search" placeholder="搜索汉字/假名/含义">
+                </div>
+                <div id="cards" class="cards-grid"></div>
+            </section>
+            <section id="quiz-view" class="view hidden">
+                <div class="controls">
+                    <select id="quiz-type">
+                        <option value="meaning">选意思</option>
+                        <option value="kana">选假名</option>
+                        <option value="spelling">拼写</option>
+                    </select>
+                    <select id="quiz-lesson"></select>
+                    <button id="start-quiz">开始测试</button>
+                </div>
+                <div id="quiz-area" class="quiz-area hidden">
+                    <div id="quiz-question" class="quiz-question"></div>
+                    <div id="quiz-options" class="quiz-options"></div>
+                    <div id="quiz-input" class="quiz-input hidden">
+                        <input id="spell-input" type="text" placeholder="输入答案...">
+                        <button id="submit-spell">提交</button>
+                    </div>
+                    <div class="quiz-footer">
+                        <span id="quiz-progress"></span>
+                        <span id="quiz-score"></span>
+                    </div>
+                </div>
+            </section>
+            <!-- 下面合并到同一个 main 中，保留原有假名页面 -->
+        <section id="table-page" class="page view hidden"></section>
+        <section id="practice-page" class="page view hidden">
             <div class="practice-mode">
                 <button id="hira-btn" onclick="setPracticeType('hira')">平假名练习</button>
                 <button id="kata-btn" onclick="setPracticeType('kata')">片假名练习</button>
