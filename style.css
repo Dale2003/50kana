@@ -43,7 +43,7 @@ body {
   font-family: 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', 'Source Han Sans SC', 'Heiti SC', 'WenQuanYi Micro Hei', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
   background: #f7f7fa; margin: 0; padding: 0;
 }
-header { background: #4a90e2; color: #fff; padding: 1.5rem 0; text-align: center; }
+header { background: #5db450; color: #fff; padding: 1.5rem 0; text-align: center; }
 nav { margin-top: 1rem; }
 .nav-btn { background: #eaf4ff; color: #4a90e2; border: none; padding: 0.7rem 1.5rem; margin: 0 0.5rem; border-radius: 6px; font-size: 1.1rem; cursor: pointer; }
 .nav-btn:hover { background: #4a90e2; color: #fff; }
@@ -134,14 +134,3 @@ main { max-width: 900px; margin: 2rem auto; background: #fff; border-radius: 12p
 .option.wrong { border-color:#ef4444; background:#fef2f2; }
 .quiz-input { display:flex; gap:8px; margin-top:8px; }
 .quiz-footer { margin-top:12px; display:flex; justify-content:space-between; color:#6b7280; }
-
-/* 顶部蓝色导航按钮在移动端的紧凑样式 */
-@media (max-width: 640px) {
-  header { padding: 0.8rem 0; }
-  .nav-btn { padding: 0.4rem 0.7rem; margin: 0 0.25rem; font-size: 0.9rem; }
-}
-
-/* 卡片在手机端显示为两列而不是一列 */
-@media (max-width: 640px) {
-  .cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
