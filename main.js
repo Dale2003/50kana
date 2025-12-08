@@ -555,7 +555,8 @@ function setupTabs() {
     table: document.getElementById('table-page'),
     practice: document.getElementById('practice-page'),
     cards: document.getElementById('cards-view'),
-    quiz: document.getElementById('quiz-view')
+    quiz: document.getElementById('quiz-view'),
+    grammar: document.getElementById('grammar-view')
   };
   buttons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -564,11 +565,213 @@ function setupTabs() {
       Object.values(views).forEach(v => v.classList.add('hidden'));
       const tab = btn.dataset.tab;
       if (views[tab]) views[tab].classList.remove('hidden');
+      if (tab === 'grammar') {
+        loadGrammar();
+      }
     });
   });
   // 默认激活 一览表
   const def = document.querySelector('[data-tab="table"]');
   if (def) def.click();
+}
+
+// 懒加载语法：直接把 grammar.tex 原文读入 <pre>
+async function loadGrammar() {
+  const loading = document.getElementById('grammar-loading');
+  const pre = document.getElementById('grammar-content');
+  const cont = document.getElementById('grammar-rendered');
+  if (!cont) return;
+  // 若已经加载过则不再重复请求
+  if (cont.dataset.loaded === '1') return;
+  try {
+    if (loading) loading.style.display = '';
+    const resp = await fetch('assets/grammar.tex');
+    const tex = await resp.text();
+    // 解析 + 渲染为 HTML，同时保留原文在隐藏的 <pre>
+    if (pre) pre.textContent = tex;
+    const html = parseGrammarTexToHtml(tex);
+    cont.innerHTML = html;
+    cont.dataset.loaded = '1';
+  } catch (e) {
+    console.error('加载 grammar.tex 失败', e);
+    if (cont) cont.innerHTML = '<div style="color:#c00">加载失败，请稍后重试。</div>';
+  } finally {
+    if (loading) loading.style.display = 'none';
+  }
+}
+
+// 将 grammar.tex 的常用结构转换为 HTML（标题、列表、粗体、分隔线、表格）
+function parseGrammarTexToHtml(tex) {
+  let s = tex || '';
+  // 去掉文档结束标记
+  s = s.replace(/\n?\\end\{document\}\s*$/,'');
+  // 表格：tabularx -> HTML table（使用手动匹配，避免列格式的嵌套花括号破坏正则）
+  s = replaceTabularxBlocks(s);
+  // itemize 列表
+  s = s.replace(/\\begin\{itemize\}([\s\S]*?)\\end\{itemize\}/g, (m, body) => {
+    // 将 \item 分割成条目
+    const items = body.split(/\\item\s*/).map(t => t.trim()).filter(t => t);
+    if (!items.length) return '';
+    const lis = items.map(it => `<li>${inlineTexToHtml(it)}</li>`).join('');
+    return `<ul>${lis}</ul>`;
+  });
+  // 标题：section -> h2, subsection -> h3, subsubsection -> h4, paragraph -> h5, subparagraph -> h6
+  s = s.replace(/\\section\{([^}]*)\}/g, '<h2>$1</h2>');
+  s = s.replace(/\\subsection\{([^}]*)\}/g, '<h3>$1</h3>');
+  s = s.replace(/\\subsubsection\{([^}]*)\}/g, '<h4>$1</h4>');
+  s = s.replace(/\\paragraph\{([^}]*)\}/g, '<h5>$1</h5>');
+  s = s.replace(/\\subparagraph\{([^}]*)\}/g, '<h6>$1</h6>');
+  // 横线 "---" 独立一行
+  s = s.replace(/^\s*---\s*$/gm, '<hr>');
+  // 行内：粗体、\quad 换为空格
+  s = inlineTexToHtml(s);
+  // 将 LaTeX 行末的 \\ 视为换行
+  s = s.replace(/\\\\/g, '<br>');
+  // 不对普通换行进行全局替换，避免干扰已生成的 HTML 结构
+  return s;
+}
+
+function inlineTexToHtml(s) {
+  if (!s) return '';
+  let t = s;
+  // 	extbf{...}
+  t = t.replace(/\\textbf\{([^}]*)\}/g, '<strong>$1</strong>');
+  // \quad -> 空格
+  t = t.replace(/\\quad/g, '&emsp;');
+  // 多余的花括号（仅去掉成对的包裹符，不影响文本中的花括号）
+  t = t.replace(/\{\}/g, '');
+  return t;
+}
+
+function texTabularToHtml(body) {
+  if (!body) return '';
+  let b = body;
+  // 移除行色、横线提示
+  b = b.replace(/\r?\n?\\rowcolor\{[^}]*\}.*\n?/g, '');
+  b = b.replace(/\\hline(?:\\hline)?/g, '');
+  // 处理单元格中的内嵌 tabular
+    // 嵌套安全：去掉所有 \begin{tabular}{...} ... \end{tabular} 外壳，仅保留内部内容，并将 \\\\ 渲染为 <br>
+    b = stripTabularEnvs(b);
+  // 去除（并展开）任意嵌套层级的 tabular 环境，保留内容并把 \\\\ 转为 <br>
+  function stripTabularEnvs(s) {
+    const begin = '\\begin{tabular}';
+    const end = '\\end{tabular}';
+    let out = '';
+    let i = 0;
+    while (i < s.length) {
+      const start = s.indexOf(begin, i);
+      if (start === -1) { out += s.slice(i); break; }
+      // 追加 begin 之前的文本
+      out += s.slice(i, start);
+      // 跳过环境名后的列格式：形如 `}{...}` 的下一对花括号
+      let specStart = s.indexOf('{', start + begin.length);
+      if (specStart === -1) { out += s.slice(start); break; }
+      const specEnd = findMatchingBrace(s, specStart);
+      if (specEnd === -1) { out += s.slice(start); break; }
+      // 从列格式后面开始寻找配对的 \end{tabular}
+      let scan = specEnd + 1;
+      let depth = 1;
+      while (scan < s.length && depth > 0) {
+        const nextBegin = s.indexOf(begin, scan);
+        const nextEnd = s.indexOf(end, scan);
+        if (nextEnd === -1) break; // 不完整，终止
+        if (nextBegin !== -1 && nextBegin < nextEnd) {
+          // 新的嵌套 begin，深度 +1
+          // 跳过其列格式
+          let spec2 = s.indexOf('{', nextBegin + begin.length);
+          if (spec2 === -1) { scan = nextBegin + begin.length; depth++; continue; }
+          const spec2End = findMatchingBrace(s, spec2);
+          if (spec2End === -1) { scan = nextBegin + begin.length; depth++; continue; }
+          depth++;
+          scan = spec2End + 1;
+        } else {
+          // 遇到一个 end，深度 -1
+          depth--;
+          if (depth === 0) {
+              // 提取内部内容（列格式后到 end 之前），并处理内层 tabular
+              const inner = s.slice(specEnd + 1, nextEnd);
+              const innerProcessed = stripTabularEnvs(inner);
+              out += innerProcessed.replace(/\\\\/g, '<br>');
+            i = nextEnd + end.length;
+            break;
+          }
+          scan = nextEnd + end.length;
+        }
+      }
+      if (depth > 0) { // 未能找到匹配 end，输出剩余并结束
+        out += s.slice(start);
+        break;
+      }
+    }
+    return out;
+  }
+  // 按行分割：以 "\\" 作为行结束（可能后跟空白）
+  const rows = b.split(/\\\\\s*/).map(r => r.trim()).filter(r => r);
+  if (!rows.length) return '';
+  const parsed = rows.map(r => r.split(/\s*&\s*/).map(c => inlineTexToHtml(c.trim())));
+  const colCount = Math.max(...parsed.map(r => r.length));
+  // 判断首行是否表头：包含常见表头关键词时才作为表头
+  const headerKeywords = /(词典形|简体|敬体|过去|非过去|词尾|词干|例句|动词|動詞|漢字表示|假名表示|含义|品词|词性|形容词|动 词|动\s*词)/;
+  let thead = '';
+  let dataRows = parsed.slice();
+  if (parsed.length && parsed[0].some(c => headerKeywords.test(c))) {
+    const head = dataRows.shift();
+    while (head.length < colCount) head.push('');
+    thead = '<thead><tr>' + head.map(h => `<th>${h}</th>`).join('') + '</tr></thead>';
+  }
+  // 生成主体
+  const tbodyRows = dataRows.map(r => {
+    const cells = r.slice();
+    while (cells.length < colCount) cells.push('');
+    return '<tr>' + cells.map(c => `<td>${c}</td>`).join('') + '</tr>';
+  }).join('');
+  const tbody = `<tbody>${tbodyRows}</tbody>`;
+  return `<table class="grammar-table">${thead}${tbody}</table>`;
+}
+
+// 工具：在字符串中找到从 openIndex 开始的匹配右花括号位置，支持嵌套
+function findMatchingBrace(str, openIndex) {
+  let depth = 0;
+  for (let i = openIndex; i < str.length; i++) {
+    const ch = str[i];
+    if (ch === '{') depth++;
+    else if (ch === '}') {
+      depth--;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+
+// 用安全的方式替换所有 tabularx 环境为 HTML 表格
+function replaceTabularxBlocks(s) {
+  const beginTag = '\\begin{tabularx}';
+  const endTag = '\\end{tabularx}';
+  let out = '';
+  let i = 0;
+  while (i < s.length) {
+    const start = s.indexOf(beginTag, i);
+    if (start === -1) { out += s.slice(i); break; }
+    out += s.slice(i, start);
+    // 定位第一个 {（宽度参数）
+    let j = s.indexOf('{', start + beginTag.length);
+    if (j === -1) { out += s.slice(start); break; }
+    const jEnd = findMatchingBrace(s, j);
+    if (jEnd === -1) { out += s.slice(start); break; }
+    // 第二个 {（列格式参数）
+    let k = s.indexOf('{', jEnd + 1);
+    if (k === -1) { out += s.slice(start); break; }
+    const kEnd = findMatchingBrace(s, k);
+    if (kEnd === -1) { out += s.slice(start); break; }
+    // 表体从 kEnd+1 开始，直到 endTag
+    const bodyStart = kEnd + 1;
+    const end = s.indexOf(endTag, bodyStart);
+    if (end === -1) { out += s.slice(start); break; }
+    const body = s.slice(bodyStart, end);
+    out += texTabularToHtml(body);
+    i = end + endTag.length;
+  }
+  return out;
 }
 
 function populateLessonFilters(words) {
