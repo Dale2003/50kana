@@ -136,6 +136,19 @@ main { max-width: 900px; margin: 2rem auto; background: #fff; border-radius: 12p
 .option.wrong { border-color:#ef4444; background:#fef2f2; }
 .quiz-input { display:flex; gap:8px; margin-top:8px; }
 .quiz-footer { margin-top:12px; display:flex; justify-content:space-between; color:#6b7280; }
+.wrong-notebook { position:fixed; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; padding:18px; background:rgba(15,23,42,0.32); }
+.wrong-notebook.hidden { display:none; }
+.wrong-panel { width:min(720px, 100%); max-height:min(78vh, 720px); display:flex; flex-direction:column; background:#fff; border:1px solid #d1d5db; border-radius:10px; box-shadow:0 18px 40px rgba(15,23,42,0.18); overflow:hidden; }
+.wrong-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:16px; border-bottom:1px solid #e5e7eb; }
+.wrong-title { font-size:20px; font-weight:700; color:#111827; }
+.wrong-summary { margin-top:4px; color:#6b7280; }
+.wrong-close { width:32px; height:32px; border:1px solid #d1d5db; border-radius:6px; background:#fff; color:#374151; font-size:20px; line-height:1; cursor:pointer; }
+.wrong-list { overflow:auto; padding:12px 16px; display:grid; gap:10px; }
+.wrong-item { border:1px solid #e5e7eb; border-radius:8px; padding:10px 12px; background:#fafafa; color:#111827; }
+.wrong-word { display:flex; justify-content:space-between; gap:12px; margin-bottom:6px; font-weight:700; }
+.wrong-detail { margin-top:4px; color:#374151; }
+.wrong-empty { padding:18px; text-align:center; color:#6b7280; }
+.wrong-actions { display:flex; justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid #e5e7eb; }
 
 /* 顶部蓝色导航按钮在移动端的紧凑样式 */
 @media (max-width: 640px) {

@@ -886,6 +886,9 @@ function setupSearch(words) {
 function setupQuiz(words) {
   const startBtn = document.getElementById('start-quiz');
   const spellInput = document.getElementById('spell-input');
+  const wrongClose = document.getElementById('wrong-close');
+  const wrongDismiss = document.getElementById('wrong-dismiss');
+  const wrongTrain = document.getElementById('wrong-train');
   if (startBtn) startBtn.addEventListener('click', () => startQuiz(words));
   if (spellInput) {
     spellInput.addEventListener('keydown', event => {
@@ -894,12 +897,28 @@ function setupQuiz(words) {
       document.getElementById('submit-spell')?.click();
     });
   }
+  if (wrongClose) wrongClose.addEventListener('click', hideWrongNotebook);
+  if (wrongDismiss) wrongDismiss.addEventListener('click', hideWrongNotebook);
+  if (wrongTrain) wrongTrain.addEventListener('click', startWrongQuiz);
 }
 
-let quizState = { list: [], idx: 0, score: 0, total: 0, type: 'meaning', answerLocked: false };
+let quizState = {
+  list: [],
+  idx: 0,
+  score: 0,
+  total: 0,
+  type: 'meaning',
+  selectedType: 'meaning',
+  currentType: 'meaning',
+  answerLocked: false,
+  testAll: false,
+  reviewMode: false,
+  wrongAnswers: []
+};
 
 function startQuiz(words) {
-  let type = document.getElementById('quiz-type')?.value || 'meaning';
+  const selectedType = document.getElementById('quiz-type')?.value || 'meaning';
+  let type = selectedType;
   const lesson = document.getElementById('quiz-lesson')?.value || '全部';
   const testAll = document.getElementById('quiz-all')?.checked || false;
   let list = getWordsForLesson(words, lesson);
@@ -910,7 +929,20 @@ function startQuiz(words) {
   if (!testAll) list = list.slice(0, 20);
   // 随机模式：每题随机一种类型
   if (type === 'random') type = ['meaning', 'kana', 'kanji', 'spelling'];
-  quizState = { list, idx: 0, score: 0, total: 0, type, answerLocked: false };
+  quizState = {
+    list,
+    idx: 0,
+    score: 0,
+    total: 0,
+    type,
+    selectedType,
+    currentType: selectedType === 'random' ? 'meaning' : selectedType,
+    answerLocked: false,
+    testAll,
+    reviewMode: false,
+    wrongAnswers: []
+  };
+  hideWrongNotebook();
   document.getElementById('quiz-area').classList.remove('hidden');
   renderQuizQuestion();
 }
@@ -930,6 +962,7 @@ function renderQuizQuestion() {
     type = types[Math.floor(Math.random() * types.length)];
     quizState.type = types; // 保留数组以便下一题继续随机
   }
+  quizState.currentType = type;
   const w = list[idx];
   document.getElementById('quiz-progress').textContent = `${idx + 1}/${list.length}`;
   document.getElementById('quiz-score').textContent = `得分：${quizState.score}/${quizState.total}`;
@@ -939,19 +972,19 @@ function renderQuizQuestion() {
   if (submitSpell) submitSpell.disabled = false;
   if (feedbackEl) { feedbackEl.textContent = ''; feedbackEl.style.color = ''; }
   if (type === 'meaning') {
-    qEl.textContent = `日语：${w.kanji}`;
+    qEl.textContent = getQuizPrompt(w, type);
     const options = sampleOptions(list, w.meaning, x => x.meaning);
     options.forEach(opt => appendOption(optsEl, opt, w.meaning));
   } else if (type === 'kana') {
-    qEl.textContent = `日语汉字：${w.kanji || w.meaning}`;
+    qEl.textContent = getQuizPrompt(w, type);
     const options = sampleOptions(list, w.kana, x => x.kana);
     options.forEach(opt => appendOption(optsEl, opt, w.kana));
   } else if (type === 'kanji') {
-    qEl.textContent = `假名：${w.kana}`;
+    qEl.textContent = getQuizPrompt(w, type);
     const options = sampleOptions(list, w.kanji || w.meaning, x => x.kanji || x.meaning);
     options.forEach(opt => appendOption(optsEl, opt, w.kanji || w.meaning));
   } else {
-    qEl.textContent = `请拼写假名：${w.meaning}`;
+    qEl.textContent = getQuizPrompt(w, type);
     inputWrap.classList.remove('hidden');
     spellInput.value = '';
     submitSpell.onclick = () => checkSpell(spellInput.value, w);
@@ -960,12 +993,10 @@ function renderQuizQuestion() {
 }
 
 function sampleOptions(list, correct, picker) {
-  const options = new Set([correct]);
-  while (options.size < 4) {
-    const cand = picker(list[Math.floor(Math.random() * list.length)]);
-    options.add(cand);
-  }
-  return Array.from(options).sort(() => Math.random() - 0.5);
+  const candidates = Array.from(new Set(list.map(picker).filter(Boolean)));
+  const wrongOptions = shuffleWords(candidates.filter(item => item !== correct));
+  const options = [correct, ...wrongOptions].filter(Boolean);
+  return shuffleWords(options.slice(0, Math.min(4, options.length)));
 }
 
 function appendOption(container, text, correct) {
@@ -979,21 +1010,22 @@ function appendOption(container, text, correct) {
 function nextQuiz() {
   quizState.idx++;
   if (quizState.idx >= quizState.list.length) {
-    document.getElementById('quiz-question').textContent = '测试结束！';
-    document.getElementById('quiz-options').innerHTML = '';
-    document.getElementById('quiz-input').classList.add('hidden');
+    finishQuiz();
     return;
   }
   renderQuizQuestion();
 }
 
 function checkChoice(node, selected, correct) {
+  if (quizState.answerLocked) return;
+  quizState.answerLocked = true;
   quizState.total++;
   if (selected === correct) {
     quizState.score++;
     node.classList.add('correct');
   } else {
     node.classList.add('wrong');
+    recordWrongAnswer(selected, correct);
   }
   document.getElementById('quiz-score').textContent = `得分：${quizState.score}/${quizState.total}`;
   // 禁用所有选项
@@ -1034,6 +1066,7 @@ function checkSpell(input, w) {
       fb.textContent = `错误，参考：${ref}`;
       fb.style.color = 'red';
     }
+    recordWrongAnswer(inText, `${w.kana}${w.kanji ? ' / ' + w.kanji : ''}`);
   }
   document.getElementById('quiz-score').textContent = `得分：${quizState.score}/${quizState.total}`;
   setTimeout(() => {
@@ -1042,6 +1075,130 @@ function checkSpell(input, w) {
     if (fb) { fb.textContent = ''; fb.style.color = ''; }
     nextQuiz();
   }, 600);
+}
+
+function getQuizPrompt(w, type) {
+  if (type === 'meaning') return `日语：${w.kanji || w.kana}`;
+  if (type === 'kana') return `日语汉字：${w.kanji || w.meaning}`;
+  if (type === 'kanji') return `假名：${w.kana}`;
+  return `请拼写假名：${w.meaning}`;
+}
+
+function getQuizCorrectAnswer(w, type) {
+  if (type === 'meaning') return w.meaning || '';
+  if (type === 'kana') return w.kana || '';
+  if (type === 'kanji') return w.kanji || w.meaning || '';
+  return `${w.kana || ''}${w.kanji ? ' / ' + w.kanji : ''}`;
+}
+
+function getQuizTypeLabel(type) {
+  const labels = {
+    meaning: '选意思',
+    kana: '选假名',
+    kanji: '给假名选汉字',
+    spelling: '拼写'
+  };
+  return labels[type] || type || '';
+}
+
+function recordWrongAnswer(userAnswer, correctAnswer) {
+  const w = quizState.list[quizState.idx];
+  if (!w) return;
+  const type = quizState.currentType || 'meaning';
+  quizState.wrongAnswers.push({
+    word: w,
+    type,
+    question: getQuizPrompt(w, type),
+    userAnswer: (userAnswer || '').trim() || '（空）',
+    correctAnswer: correctAnswer || getQuizCorrectAnswer(w, type)
+  });
+}
+
+function finishQuiz() {
+  document.getElementById('quiz-question').textContent = quizState.reviewMode ? '错题训练结束！' : '测试结束！';
+  document.getElementById('quiz-options').innerHTML = '';
+  document.getElementById('quiz-input').classList.add('hidden');
+  const feedbackEl = document.getElementById('quiz-feedback');
+  if (feedbackEl) { feedbackEl.textContent = ''; feedbackEl.style.color = ''; }
+  document.getElementById('quiz-score').textContent = `得分：${quizState.score}/${quizState.total}`;
+  if (quizState.testAll || quizState.reviewMode) {
+    showWrongNotebook();
+  }
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[ch]);
+}
+
+function showWrongNotebook() {
+  const notebook = document.getElementById('wrong-notebook');
+  const summary = document.getElementById('wrong-summary');
+  const list = document.getElementById('wrong-list');
+  const trainBtn = document.getElementById('wrong-train');
+  if (!notebook || !summary || !list || !trainBtn) return;
+
+  const wrongs = quizState.wrongAnswers;
+  summary.textContent = wrongs.length
+    ? `本轮错了 ${wrongs.length} 题，得分 ${quizState.score}/${quizState.total}`
+    : `本轮没有错题，得分 ${quizState.score}/${quizState.total}`;
+  trainBtn.style.display = wrongs.length ? '' : 'none';
+  trainBtn.disabled = wrongs.length === 0;
+
+  if (!wrongs.length) {
+    list.innerHTML = '<div class="wrong-empty">这轮没有错题。</div>';
+  } else {
+    list.innerHTML = wrongs.map(entry => {
+      const w = entry.word;
+      return `
+        <div class="wrong-item">
+          <div class="wrong-word">
+            <span>${escapeHtml(w.kanji || w.kana)}</span>
+            <span>${escapeHtml(w.kana || '')}</span>
+          </div>
+          <div class="wrong-detail">题型：${escapeHtml(getQuizTypeLabel(entry.type))}</div>
+          <div class="wrong-detail">题目：${escapeHtml(entry.question)}</div>
+          <div class="wrong-detail">你的答案：${escapeHtml(entry.userAnswer)}</div>
+          <div class="wrong-detail">正确答案：${escapeHtml(entry.correctAnswer)}</div>
+          <div class="wrong-detail">释义：${escapeHtml(w.meaning || '')}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  notebook.classList.remove('hidden');
+}
+
+function hideWrongNotebook() {
+  document.getElementById('wrong-notebook')?.classList.add('hidden');
+}
+
+function startWrongQuiz() {
+  const wrongWords = quizState.wrongAnswers.map(entry => entry.word);
+  if (!wrongWords.length) return;
+  const selectedType = quizState.selectedType || 'meaning';
+  const type = selectedType === 'random' ? ['meaning', 'kana', 'kanji', 'spelling'] : selectedType;
+  quizState = {
+    list: shuffleWords(wrongWords),
+    idx: 0,
+    score: 0,
+    total: 0,
+    type,
+    selectedType,
+    currentType: selectedType === 'random' ? 'meaning' : selectedType,
+    answerLocked: false,
+    testAll: false,
+    reviewMode: true,
+    wrongAnswers: []
+  };
+  hideWrongNotebook();
+  document.getElementById('quiz-area').classList.remove('hidden');
+  renderQuizQuestion();
 }
 
 window.onload = async function() {
