@@ -817,6 +817,15 @@ function getWordsForLesson(words, lesson) {
   });
 }
 
+function shuffleWords(list) {
+  const shuffled = [...list];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 function populateLessonFilters(words) {
   const lessons = getLessonOptions(words);
   const filter = document.getElementById('lesson-filter');
@@ -892,11 +901,13 @@ let quizState = { list: [], idx: 0, score: 0, total: 0, type: 'meaning', answerL
 function startQuiz(words) {
   let type = document.getElementById('quiz-type')?.value || 'meaning';
   const lesson = document.getElementById('quiz-lesson')?.value || '全部';
+  const testAll = document.getElementById('quiz-all')?.checked || false;
   let list = getWordsForLesson(words, lesson);
   // 过滤空项
   list = list.filter(w => w.kana && w.meaning);
   // 打乱
-  list = list.sort(() => Math.random() - 0.5).slice(0, 20);
+  list = shuffleWords(list);
+  if (!testAll) list = list.slice(0, 20);
   // 随机模式：每题随机一种类型
   if (type === 'random') type = ['meaning', 'kana', 'kanji', 'spelling'];
   quizState = { list, idx: 0, score: 0, total: 0, type, answerLocked: false };
